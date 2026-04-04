@@ -25,10 +25,13 @@ export interface JobRecord {
     typeOfWork: string;
     jobCategory: string;
 }
+export interface JobWithIdRecord extends JobRecord {
+    id: bigint;
+}
 export interface backendInterface {
     createJob(input: JobRecord): Promise<bigint>;
     deleteJob(id: bigint): Promise<void>;
-    getAllJobs(): Promise<Array<JobRecord>>;
+    getAllJobs(): Promise<Array<JobWithIdRecord>>;
     getJobById(id: bigint): Promise<JobRecord>;
     getSummaryStats(): Promise<{
         pendingCount: bigint;

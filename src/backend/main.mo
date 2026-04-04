@@ -45,6 +45,27 @@ actor {
     jobCategory : Text;
   };
 
+  // Job with ID — returned by getAllJobs so the frontend always has the ID
+  type JobWithId = {
+    id : Nat;
+    shopName : Text;
+    personName : Text;
+    customerMobile : Text;
+    place : Text;
+    typeOfWork : Text;
+    modelName : Text;
+    noOfRackets : Nat;
+    jobDescription : Text;
+    serviceCharges : Float;
+    paymentMode : Text;
+    advancedAmount : Float;
+    totalAmount : Float;
+    jobStatus : Text;
+    dateOfJob : Text;
+    createdAt : Int;
+    jobCategory : Text;
+  };
+
   var nextJobId : Nat = 1;
 
   // This stable var uses V1 type so it is upgrade-compatible with the
@@ -66,7 +87,7 @@ actor {
     };
     stableJobsV2 := [];
 
-    // 2. Migrate any remaining V1 records that haven’t been migrated yet
+    // 2. Migrate any remaining V1 records that haven't been migrated yet
     for ((id, old) in jobRecords.entries().toArray().vals()) {
       if (not jobRecordsV2.containsKey(id)) {
         let category = if (old.shopName != "") { "shop" } else { "customer" };
@@ -129,8 +150,30 @@ actor {
     };
   };
 
-  public query func getAllJobs() : async [JobRecord] {
-    jobRecordsV2.values().toArray();
+  // Returns all jobs with their IDs embedded so the frontend never needs
+  // a local ID cache and data shows correctly on any device/browser.
+  public query func getAllJobs() : async [JobWithId] {
+    jobRecordsV2.entries().toArray().map(func((id, job) : (Nat, JobRecord)) : JobWithId {
+      {
+        id = id;
+        shopName = job.shopName;
+        personName = job.personName;
+        customerMobile = job.customerMobile;
+        place = job.place;
+        typeOfWork = job.typeOfWork;
+        modelName = job.modelName;
+        noOfRackets = job.noOfRackets;
+        jobDescription = job.jobDescription;
+        serviceCharges = job.serviceCharges;
+        paymentMode = job.paymentMode;
+        advancedAmount = job.advancedAmount;
+        totalAmount = job.totalAmount;
+        jobStatus = job.jobStatus;
+        dateOfJob = job.dateOfJob;
+        createdAt = job.createdAt;
+        jobCategory = job.jobCategory;
+      }
+    });
   };
 
   public query func getSummaryStats() : async {

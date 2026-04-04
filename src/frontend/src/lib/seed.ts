@@ -1,11 +1,10 @@
 import { createActorWithConfig } from "../config";
-import { registerJobId } from "../hooks/useQueries";
 
 const SEED_KEY = "sports_repair_seeded_v2";
 
 const sampleJobs = [
   {
-    shopName: "Champion Sports Store",
+    shopName: "",
     personName: "Rahul Sharma",
     customerMobile: "9876543210",
     place: "Bangalore, Koramangala",
@@ -20,13 +19,14 @@ const sampleJobs = [
     totalAmount: 500,
     jobStatus: "Pending",
     dateOfJob: "2026-03-28",
+    jobCategory: "customer",
   },
   {
-    shopName: "Victory Sports",
+    shopName: "",
     personName: "Priya Patel",
     customerMobile: "9812345678",
     place: "Chennai, Anna Nagar",
-    typeOfWork: "Broken Badminton Racket Repair",
+    typeOfWork: "Badminton Racket Repair",
     noOfRackets: 1,
     modelName: "Li-Ning N9",
     jobDescription:
@@ -37,9 +37,10 @@ const sampleJobs = [
     totalAmount: 800,
     jobStatus: "Completed",
     dateOfJob: "2026-03-25",
+    jobCategory: "customer",
   },
   {
-    shopName: "Star Cricket Hub",
+    shopName: "",
     personName: "Arjun Kumar",
     customerMobile: "9988776655",
     place: "Mumbai, Andheri",
@@ -54,9 +55,10 @@ const sampleJobs = [
     totalAmount: 1200,
     jobStatus: "In Progress",
     dateOfJob: "2026-03-29",
+    jobCategory: "customer",
   },
   {
-    shopName: "Sports Kingdom",
+    shopName: "Victory Sports",
     personName: "Sunita Reddy",
     customerMobile: "9765432100",
     place: "Hyderabad, Banjara Hills",
@@ -71,6 +73,7 @@ const sampleJobs = [
     totalAmount: 300,
     jobStatus: "Pending",
     dateOfJob: "2026-03-30",
+    jobCategory: "shop",
   },
   {
     shopName: "Pro Badminton World",
@@ -87,9 +90,10 @@ const sampleJobs = [
     totalAmount: 600,
     jobStatus: "Completed",
     dateOfJob: "2026-03-22",
+    jobCategory: "shop",
   },
   {
-    shopName: "Elite Sports Corner",
+    shopName: "",
     personName: "Meena Iyer",
     customerMobile: "9543210987",
     place: "Pune, Kothrud",
@@ -104,6 +108,7 @@ const sampleJobs = [
     totalAmount: 900,
     jobStatus: "In Progress",
     dateOfJob: "2026-03-31",
+    jobCategory: "customer",
   },
 ];
 
@@ -117,33 +122,32 @@ export async function seedIfNeeded() {
       return;
     }
     const now = BigInt(Date.now()) * BigInt(1_000_000);
-    const results = await Promise.all(
+    await Promise.all(
       sampleJobs.map((job, i) => {
         const createdAt = now - BigInt(i) * BigInt(3_600_000_000_000);
-        return actor
-          .createJob({
-            shopName: job.shopName,
-            personName: job.personName,
-            customerMobile: job.customerMobile,
-            place: job.place,
-            typeOfWork: job.typeOfWork,
-            noOfRackets: BigInt(job.noOfRackets),
-            modelName: job.modelName,
-            jobDescription: job.jobDescription,
-            paymentMode: job.paymentMode,
-            serviceCharges: job.serviceCharges,
-            advancedAmount: job.advancedAmount,
-            totalAmount: job.totalAmount,
-            jobStatus: job.jobStatus,
-            dateOfJob: job.dateOfJob,
-            createdAt,
-          })
-          .then((jobId) => ({ jobId, createdAt }));
+        // Cast to any because the auto-generated binding predates jobCategory;
+        // the actual canister accepts all fields.
+        // biome-ignore lint/suspicious/noExplicitAny: generated binding is stale
+        return (actor.createJob as (input: any) => Promise<bigint>)({
+          shopName: job.shopName,
+          personName: job.personName,
+          customerMobile: job.customerMobile,
+          place: job.place,
+          typeOfWork: job.typeOfWork,
+          noOfRackets: BigInt(job.noOfRackets),
+          modelName: job.modelName,
+          jobDescription: job.jobDescription,
+          paymentMode: job.paymentMode,
+          serviceCharges: job.serviceCharges,
+          advancedAmount: job.advancedAmount,
+          totalAmount: job.totalAmount,
+          jobStatus: job.jobStatus,
+          dateOfJob: job.dateOfJob,
+          createdAt,
+          jobCategory: job.jobCategory,
+        });
       }),
     );
-    for (const { jobId, createdAt } of results) {
-      registerJobId(createdAt, jobId);
-    }
     localStorage.setItem(SEED_KEY, "1");
   } catch (e) {
     console.warn("Seed failed", e);
