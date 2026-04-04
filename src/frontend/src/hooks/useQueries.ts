@@ -29,6 +29,13 @@ export function lookupJobId(createdAt: bigint): bigint | null {
 
 export type JobWithId = JobRecord & { _id: bigint | null };
 
+// Legacy jobs from the backend may not have jobCategory; infer it from shopName.
+function inferCategory(job: unknown): string {
+  const j = job as { jobCategory?: string; shopName?: string };
+  if (j.jobCategory) return j.jobCategory;
+  return j.shopName ? "shop" : "customer";
+}
+
 export function useGetAllJobs() {
   const { actor, isFetching } = useActor();
   return useQuery<JobWithId[]>({
@@ -36,9 +43,10 @@ export function useGetAllJobs() {
     queryFn: async () => {
       if (!actor) return [];
       const jobs = await actor.getAllJobs();
-      const withIds: JobWithId[] = jobs.map((job) => ({
-        ...job,
-        _id: lookupJobId(job.createdAt),
+      const withIds: JobWithId[] = (jobs as unknown[]).map((job) => ({
+        ...(job as JobRecord),
+        jobCategory: inferCategory(job),
+        _id: lookupJobId((job as JobRecord).createdAt),
       }));
       return withIds.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
     },

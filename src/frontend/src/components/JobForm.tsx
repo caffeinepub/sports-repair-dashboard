@@ -39,8 +39,7 @@ interface Props {
 }
 
 interface FormState {
-  shopName: string;
-  personName: string;
+  customerName: string;
   customerMobile: string;
   place: string;
   typeOfWork: string;
@@ -56,8 +55,7 @@ interface FormState {
 }
 
 const empty: FormState = {
-  shopName: "",
-  personName: "",
+  customerName: "",
   customerMobile: "",
   place: "",
   typeOfWork: "",
@@ -85,8 +83,7 @@ export function JobForm({ open, onOpenChange, editJob }: Props) {
       setErrors({});
       if (editJob) {
         setForm({
-          shopName: editJob.shopName,
-          personName: editJob.personName,
+          customerName: editJob.personName,
           customerMobile: editJob.customerMobile,
           place: editJob.place,
           typeOfWork: editJob.typeOfWork,
@@ -118,9 +115,8 @@ export function JobForm({ open, onOpenChange, editJob }: Props) {
 
   function validate(): boolean {
     const newErrors: Partial<Record<keyof FormState, string>> = {};
-    if (!form.shopName.trim()) newErrors.shopName = "Shop name is required";
-    if (!form.personName.trim())
-      newErrors.personName = "Person name is required";
+    if (!form.customerName.trim())
+      newErrors.customerName = "Customer name is required";
     if (!form.customerMobile.trim())
       newErrors.customerMobile = "Mobile number is required";
     if (!form.typeOfWork) newErrors.typeOfWork = "Please select a service type";
@@ -135,8 +131,8 @@ export function JobForm({ open, onOpenChange, editJob }: Props) {
     const now = BigInt(Date.now()) * BigInt(1_000_000);
     try {
       const jobRecord = {
-        shopName: form.shopName.trim(),
-        personName: form.personName.trim(),
+        shopName: "",
+        personName: form.customerName.trim(),
         customerMobile: form.customerMobile.trim(),
         place: form.place.trim(),
         typeOfWork: form.typeOfWork,
@@ -150,6 +146,7 @@ export function JobForm({ open, onOpenChange, editJob }: Props) {
         jobStatus: form.jobStatus,
         dateOfJob: form.dateOfJob,
         createdAt: editJob ? editJob.createdAt : now,
+        jobCategory: "customer",
       };
       if (editJob && editJob._id !== null) {
         await updateJob.mutateAsync({ id: editJob._id, job: jobRecord });
@@ -176,38 +173,24 @@ export function JobForm({ open, onOpenChange, editJob }: Props) {
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Section: Shop Details */}
+          {/* Section: Customer Details */}
           <div className="rounded-xl border bg-blue-50/60 p-4 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-widest text-blue-700 mb-1">
-              🏪 Shop Details
+              👤 Customer Details
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="shopName">Shop Name *</Label>
+                <Label htmlFor="customerName">Customer Name *</Label>
                 <Input
-                  id="shopName"
+                  id="customerName"
                   data-ocid="job_form.input"
-                  value={form.shopName}
-                  onChange={(e) => set("shopName", e.target.value)}
-                  placeholder="e.g. Champion Sports Store"
-                  className={errors.shopName ? "border-red-500" : ""}
-                />
-                {errors.shopName && (
-                  <p className="text-xs text-red-500">{errors.shopName}</p>
-                )}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="personName">Person Name *</Label>
-                <Input
-                  id="personName"
-                  data-ocid="job_form.input"
-                  value={form.personName}
-                  onChange={(e) => set("personName", e.target.value)}
+                  value={form.customerName}
+                  onChange={(e) => set("customerName", e.target.value)}
                   placeholder="e.g. Rahul Sharma"
-                  className={errors.personName ? "border-red-500" : ""}
+                  className={errors.customerName ? "border-red-500" : ""}
                 />
-                {errors.personName && (
-                  <p className="text-xs text-red-500">{errors.personName}</p>
+                {errors.customerName && (
+                  <p className="text-xs text-red-500">{errors.customerName}</p>
                 )}
               </div>
               <div className="space-y-1.5">
@@ -226,7 +209,7 @@ export function JobForm({ open, onOpenChange, editJob }: Props) {
                   </p>
                 )}
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="place">Place / Location</Label>
                 <Input
                   id="place"

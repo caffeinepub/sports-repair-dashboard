@@ -23,6 +23,7 @@ export interface JobRecord {
     paymentMode: string;
     place: string;
     typeOfWork: string;
+    jobCategory: string;
 }
 export interface backendInterface {
     createJob(input: JobRecord): Promise<bigint>;

@@ -24,6 +24,7 @@ export const JobRecord = IDL.Record({
   'paymentMode' : IDL.Text,
   'place' : IDL.Text,
   'typeOfWork' : IDL.Text,
+  'jobCategory' : IDL.Text,
 });
 
 export const idlService = IDL.Service({
@@ -66,6 +67,7 @@ export const idlFactory = ({ IDL }) => {
     'paymentMode' : IDL.Text,
     'place' : IDL.Text,
     'typeOfWork' : IDL.Text,
+    'jobCategory' : IDL.Text,
   });
   
   return IDL.Service({

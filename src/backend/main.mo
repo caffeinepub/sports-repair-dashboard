@@ -1,15 +1,13 @@
 import Map "mo:core/Map";
-import Iter "mo:core/Iter";
-import Array "mo:core/Array";
 import Nat "mo:core/Nat";
 import Runtime "mo:core/Runtime";
 import Int "mo:core/Int";
-
 import Float "mo:core/Float";
 
-
 actor {
-  type JobRecord = {
+  // V1 record type (no jobCategory) — kept here so the stable Map type
+  // matches the previously deployed schema and the upgrade is accepted.
+  type JobRecordV1 = {
     shopName : Text;
     personName : Text;
     customerMobile : Text;
@@ -27,79 +25,130 @@ actor {
     createdAt : Int;
   };
 
-  var nextJobId = 1;
+  // V2 record type — adds jobCategory
+  type JobRecord = {
+    shopName : Text;
+    personName : Text;
+    customerMobile : Text;
+    place : Text;
+    typeOfWork : Text;
+    modelName : Text;
+    noOfRackets : Nat;
+    jobDescription : Text;
+    serviceCharges : Float;
+    paymentMode : Text;
+    advancedAmount : Float;
+    totalAmount : Float;
+    jobStatus : Text;
+    dateOfJob : Text;
+    createdAt : Int;
+    jobCategory : Text;
+  };
 
-  let jobRecords = Map.empty<Nat, JobRecord>();
+  var nextJobId : Nat = 1;
 
-  public shared ({ caller }) func createJob(input : JobRecord) : async Nat {
-    let newJob : JobRecord = {
-      input with
-      shopName = input.shopName;
-      personName = input.personName;
-      customerMobile = input.customerMobile;
-      place = input.place;
-      typeOfWork = input.typeOfWork;
-      modelName = input.modelName;
-      noOfRackets = input.noOfRackets;
-      jobDescription = input.jobDescription;
-      paymentMode = input.paymentMode;
-      advancedAmount = input.advancedAmount;
-      totalAmount = input.totalAmount;
-      jobStatus = input.jobStatus;
-      dateOfJob = input.dateOfJob;
-      serviceCharges = input.serviceCharges;
-      createdAt = input.createdAt;
+  // This stable var uses V1 type so it is upgrade-compatible with the
+  // previously deployed canister. On postupgrade we migrate its contents
+  // into jobRecordsV2 and clear it.
+  let jobRecords = Map.empty<Nat, JobRecordV1>();
+
+  // New stable storage for V2 records.
+  stable var stableJobsV2 : [(Nat, JobRecord)] = [];
+  stable var stableNextJobId : Nat = 1;
+
+  // Working V2 map (not stable — rebuilt each time from stableJobsV2)
+  let jobRecordsV2 = Map.empty<Nat, JobRecord>();
+
+  system func postupgrade() {
+    // 1. Restore V2 records from stable array
+    for ((id, job) in stableJobsV2.vals()) {
+      jobRecordsV2.add(id, job);
     };
-    jobRecords.add(nextJobId, newJob);
+    stableJobsV2 := [];
+
+    // 2. Migrate any remaining V1 records that haven’t been migrated yet
+    for ((id, old) in jobRecords.entries().toArray().vals()) {
+      if (not jobRecordsV2.containsKey(id)) {
+        let category = if (old.shopName != "") { "shop" } else { "customer" };
+        jobRecordsV2.add(id, {
+          shopName = old.shopName;
+          personName = old.personName;
+          customerMobile = old.customerMobile;
+          place = old.place;
+          typeOfWork = old.typeOfWork;
+          modelName = old.modelName;
+          noOfRackets = old.noOfRackets;
+          jobDescription = old.jobDescription;
+          serviceCharges = old.serviceCharges;
+          paymentMode = old.paymentMode;
+          advancedAmount = old.advancedAmount;
+          totalAmount = old.totalAmount;
+          jobStatus = old.jobStatus;
+          dateOfJob = old.dateOfJob;
+          createdAt = old.createdAt;
+          jobCategory = category;
+        });
+        if (id >= nextJobId) { nextJobId := id + 1 };
+      };
+    };
+
+    nextJobId := stableNextJobId;
+    if (nextJobId < 1) { nextJobId := 1 };
+  };
+
+  system func preupgrade() {
+    stableJobsV2 := jobRecordsV2.entries().toArray();
+    stableNextJobId := nextJobId;
+  };
+
+  public shared func createJob(input : JobRecord) : async Nat {
+    jobRecordsV2.add(nextJobId, input);
     let jobId = nextJobId;
     nextJobId += 1;
     jobId;
   };
 
-  public shared ({ caller }) func updateJob(id : Nat, updatedJob : JobRecord) : async () {
-    if (not jobRecords.containsKey(id)) {
-      Runtime.trap("Job with given id does not exist. ");
+  public shared func updateJob(id : Nat, updatedJob : JobRecord) : async () {
+    if (not jobRecordsV2.containsKey(id)) {
+      Runtime.trap("Job with given id does not exist.");
     };
-    jobRecords.add(id, updatedJob);
+    jobRecordsV2.add(id, updatedJob);
   };
 
-  public shared ({ caller }) func deleteJob(id : Nat) : async () {
-    if (not jobRecords.containsKey(id)) {
-      Runtime.trap("Job with given id does not exist. ");
+  public shared func deleteJob(id : Nat) : async () {
+    if (not jobRecordsV2.containsKey(id)) {
+      Runtime.trap("Job with given id does not exist.");
     };
-    jobRecords.remove(id);
+    jobRecordsV2.remove(id);
   };
 
-  public query ({ caller }) func getJobById(id : Nat) : async JobRecord {
-    switch (jobRecords.get(id)) {
-      case (null) {
-        Runtime.trap("Job with given id does not exist. ");
-      };
+  public query func getJobById(id : Nat) : async JobRecord {
+    switch (jobRecordsV2.get(id)) {
+      case (null) { Runtime.trap("Job with given id does not exist.") };
       case (?job) { job };
     };
   };
 
-  public query ({ caller }) func getAllJobs() : async [JobRecord] {
-    jobRecords.values().toArray();
+  public query func getAllJobs() : async [JobRecord] {
+    jobRecordsV2.values().toArray();
   };
 
-  public query ({ caller }) func getSummaryStats() : async {
+  public query func getSummaryStats() : async {
     totalCount : Nat;
     pendingCount : Nat;
     inProgressCount : Nat;
     completedCount : Nat;
     totalRevenue : Float;
   } {
-    let jobsArr = jobRecords.values().toArray();
+    let jobsArr = jobRecordsV2.values().toArray();
     {
-      totalCount = jobRecords.size();
+      totalCount = jobRecordsV2.size();
       pendingCount = jobsArr.filter(func(j) { j.jobStatus == "Pending" }).size();
       inProgressCount = jobsArr.filter(func(j) { j.jobStatus == "In Progress" }).size();
       completedCount = jobsArr.filter(func(j) { j.jobStatus == "Completed" }).size();
-      totalRevenue = jobsArr.map(func(j) { if (j.jobStatus == "Completed") { j.totalAmount } else { 0.0 } }).foldLeft(
-        0.0,
-        func(total, amount) { total + amount },
-      );
+      totalRevenue = jobsArr
+        .map(func(j) : Float { if (j.jobStatus == "Completed") { j.totalAmount } else { 0.0 } })
+        .foldLeft(0.0, func(acc : Float, v : Float) : Float { acc + v });
     };
   };
 };

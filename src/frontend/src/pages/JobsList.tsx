@@ -9,7 +9,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Eye, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import {
+  Eye,
+  Loader2,
+  Pencil,
+  Plus,
+  Printer,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { DeleteConfirm } from "../components/DeleteConfirm";
 import { StatusBadge } from "../components/StatusBadge";
@@ -20,7 +29,6 @@ const WORK_TYPES = [
   "All Types",
   "Badminton Racket Repair",
   "Badminton Racket Handle",
-  "Broken Badminton Racket Repair",
   "Badminton Racket Restring",
   "Cricket Bat Repair",
   "Cricket Bat Binding",
@@ -33,9 +41,15 @@ interface Props {
   onNewJob: () => void;
   onViewJob: (job: JobWithId) => void;
   onEditJob: (job: JobWithId) => void;
+  onPrintSheet: (job: JobWithId) => void;
 }
 
-export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
+export function JobsList({
+  onNewJob,
+  onViewJob,
+  onEditJob,
+  onPrintSheet,
+}: Props) {
   const { data: jobs, isLoading } = useGetAllJobs();
   const deleteJob = useDeleteJob();
   const [search, setSearch] = useState("");
@@ -47,7 +61,13 @@ export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
 
   const filtered = useMemo(() => {
     if (!jobs) return [];
-    return jobs.filter((j) => {
+    // Show jobs that are customer type OR have no shopName (legacy jobs before category was added)
+    const customerJobs = jobs.filter(
+      (j) =>
+        j.jobCategory === "customer" ||
+        (j.jobCategory !== "shop" && !j.shopName),
+    );
+    return customerJobs.filter((j) => {
       const q = search.toLowerCase();
       const matchSearch =
         !search ||
@@ -63,6 +83,16 @@ export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
       return matchSearch && matchStatus && matchType && matchFrom && matchTo;
     });
   }, [jobs, search, statusFilter, typeFilter, dateFrom, dateTo]);
+
+  // Count of all customer jobs (unfiltered)
+  const totalCustomerJobs = useMemo(() => {
+    if (!jobs) return 0;
+    return jobs.filter(
+      (j) =>
+        j.jobCategory === "customer" ||
+        (j.jobCategory !== "shop" && !j.shopName),
+    ).length;
+  }, [jobs]);
 
   const hasActiveFilters =
     search !== "" ||
@@ -91,7 +121,7 @@ export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
         <div>
           <h1 className="text-2xl font-bold">All Job Sheets</h1>
           <p className="text-muted-foreground text-sm mt-0.5">
-            {filtered.length} of {jobs?.length ?? 0} jobs
+            {filtered.length} of {totalCustomerJobs} jobs
           </p>
         </div>
         <Button
@@ -111,7 +141,7 @@ export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               className="pl-9"
-              placeholder="Search by shop, person or mobile..."
+              placeholder="Search by name or mobile..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               data-ocid="jobs.search_input"
@@ -206,7 +236,7 @@ export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
               <thead>
                 <tr className="border-b bg-muted/30">
                   <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Shop / Person
+                    Customer
                   </th>
                   <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell">
                     Service
@@ -236,13 +266,15 @@ export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
                     data-ocid={`jobs.item.${i + 1}`}
                   >
                     <td className="px-4 py-3">
-                      <div className="font-semibold">{job.shopName}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {job.personName}
-                      </div>
+                      <div className="font-semibold">{job.personName}</div>
                       <div className="text-xs text-muted-foreground">
                         {job.customerMobile}
                       </div>
+                      {job.place && (
+                        <div className="text-xs text-muted-foreground">
+                          📍 {job.place}
+                        </div>
+                      )}
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       <span className="text-xs max-w-[180px] line-clamp-2 block">
@@ -289,6 +321,15 @@ export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
                         </button>
                         <button
                           type="button"
+                          onClick={() => onPrintSheet(job)}
+                          className="p-1.5 rounded-lg hover:bg-blue-50 text-primary transition-colors"
+                          title="Print Job Sheet"
+                          data-ocid={`jobs.secondary_button.${i + 1}`}
+                        >
+                          <Printer className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => onEditJob(job)}
                           className="p-1.5 rounded-lg hover:bg-blue-50 text-primary transition-colors"
                           title="Edit"
@@ -324,7 +365,7 @@ export function JobsList({ onNewJob, onViewJob, onEditJob }: Props) {
         open={!!deleteTarget}
         onOpenChange={(v) => !v && setDeleteTarget(null)}
         onConfirm={handleDelete}
-        jobName={deleteTarget?.shopName}
+        jobName={deleteTarget?.personName}
       />
     </div>
   );

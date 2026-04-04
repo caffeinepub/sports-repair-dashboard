@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CustomerJobSheet } from "./components/CustomerJobSheet";
 import { JobDetail } from "./components/JobDetail";
 import { JobForm } from "./components/JobForm";
 import { ServiceBill } from "./components/ServiceBill";
@@ -53,6 +54,10 @@ export default function App() {
   const [billOpen, setBillOpen] = useState(false);
   const [shopFormOpen, setShopFormOpen] = useState(false);
   const [editShopJob, setEditShopJob] = useState<JobWithId | null>(null);
+  const [customerSheetJob, setCustomerSheetJob] = useState<JobWithId | null>(
+    null,
+  );
+  const [customerSheetOpen, setCustomerSheetOpen] = useState(false);
 
   useEffect(() => {
     seedIfNeeded();
@@ -95,6 +100,11 @@ export default function App() {
   function openBill(job: JobWithId) {
     setBillJob(job);
     setBillOpen(true);
+  }
+
+  function openCustomerSheet(job: JobWithId) {
+    setCustomerSheetJob(job);
+    setCustomerSheetOpen(true);
   }
 
   function openNewShopJob() {
@@ -257,6 +267,7 @@ export default function App() {
               onNewJob={openNewJob}
               onViewJob={openViewJob}
               onEditJob={openEditJob}
+              onPrintSheet={openCustomerSheet}
             />
           )}
           {page === "shopjobs" && (
@@ -264,6 +275,7 @@ export default function App() {
               onNewShopJob={openNewShopJob}
               onViewJob={openViewJob}
               onEditJob={openEditShopJob}
+              onPrintSheet={openBill}
             />
           )}
           {page === "reports" && <Reports />}
@@ -301,8 +313,17 @@ export default function App() {
           setDetailOpen(false);
           openBill(job);
         }}
+        onCustomerSheet={(job) => {
+          setDetailOpen(false);
+          openCustomerSheet(job);
+        }}
       />
       <ServiceBill job={billJob} open={billOpen} onOpenChange={setBillOpen} />
+      <CustomerJobSheet
+        job={customerSheetJob}
+        open={customerSheetOpen}
+        onOpenChange={setCustomerSheetOpen}
+      />
       <Toaster richColors position="top-right" />
     </div>
   );

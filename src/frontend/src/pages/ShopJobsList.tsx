@@ -14,6 +14,7 @@ import {
   Loader2,
   Pencil,
   Plus,
+  Printer,
   Search,
   Store,
   Trash2,
@@ -29,7 +30,6 @@ const WORK_TYPES = [
   "All Types",
   "Badminton Racket Repair",
   "Badminton Racket Handle",
-  "Broken Badminton Racket Repair",
   "Badminton Racket Restring",
   "Cricket Bat Repair",
   "Cricket Bat Binding",
@@ -42,9 +42,15 @@ interface Props {
   onNewShopJob: () => void;
   onViewJob: (job: JobWithId) => void;
   onEditJob: (job: JobWithId) => void;
+  onPrintSheet: (job: JobWithId) => void;
 }
 
-export function ShopJobsList({ onNewShopJob, onViewJob, onEditJob }: Props) {
+export function ShopJobsList({
+  onNewShopJob,
+  onViewJob,
+  onEditJob,
+  onPrintSheet,
+}: Props) {
   const { data: allJobs, isLoading } = useGetAllJobs();
   const deleteJob = useDeleteJob();
   const [search, setSearch] = useState("");
@@ -54,10 +60,14 @@ export function ShopJobsList({ onNewShopJob, onViewJob, onEditJob }: Props) {
   const [dateTo, setDateTo] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<JobWithId | null>(null);
 
-  // Filter to shop-based jobs only (shopName is not empty)
+  // Filter to shop-type jobs only using the jobCategory stored on the backend
   const shopJobs = useMemo(() => {
     if (!allJobs) return [];
-    return allJobs.filter((j) => j.shopName.trim() !== "");
+    return allJobs.filter(
+      (j) =>
+        j.jobCategory === "shop" ||
+        (j.jobCategory !== "customer" && !!j.shopName),
+    );
   }, [allJobs]);
 
   const filtered = useMemo(() => {
@@ -322,6 +332,15 @@ export function ShopJobsList({ onNewShopJob, onViewJob, onEditJob }: Props) {
                           data-ocid={`shopjobs.row.item.${i + 1}`}
                         >
                           <Eye className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onPrintSheet(job)}
+                          className="p-1.5 rounded-lg hover:bg-green-100 text-green-700 transition-colors"
+                          title="Print Service Bill"
+                          data-ocid={`shopjobs.secondary_button.${i + 1}`}
+                        >
+                          <Printer className="h-4 w-4" />
                         </button>
                         <button
                           type="button"

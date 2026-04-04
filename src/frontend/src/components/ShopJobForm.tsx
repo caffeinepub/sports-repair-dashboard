@@ -150,6 +150,7 @@ export function ShopJobForm({ open, onOpenChange, editJob }: Props) {
         jobStatus: form.jobStatus,
         dateOfJob: form.dateOfJob,
         createdAt: editJob ? editJob.createdAt : now,
+        jobCategory: "shop",
       };
       if (editJob && editJob._id !== null) {
         await updateJob.mutateAsync({ id: editJob._id, job: jobRecord });

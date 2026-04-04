@@ -26,6 +26,7 @@ export interface JobRecord {
   'paymentMode' : string,
   'place' : string,
   'typeOfWork' : string,
+  'jobCategory' : string,
 }
 export interface _SERVICE {
   'createJob' : ActorMethod<[JobRecord], bigint>,

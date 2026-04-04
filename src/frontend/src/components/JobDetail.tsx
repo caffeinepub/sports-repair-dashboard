@@ -13,6 +13,7 @@ import {
   Loader2,
   MessageCircle,
   Pencil,
+  Printer,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { JobWithId } from "../hooks/useQueries";
@@ -25,6 +26,7 @@ interface Props {
   onOpenChange: (v: boolean) => void;
   onEdit: (job: JobWithId) => void;
   onGenerateBill: (job: JobWithId) => void;
+  onCustomerSheet: (job: JobWithId) => void;
 }
 
 function buildShareText(j: JobWithId): string {
@@ -35,16 +37,27 @@ function buildShareText(j: JobWithId): string {
       : j.jobStatus === "In Progress"
         ? "🔧"
         : "⏳";
-  const lines = [
-    "🏸 *Sports Repair Shop*",
-    "━━━━━━━━━━━━━━━━━━━━",
-    "",
-    "🏪 *Shop Details*",
-    `Shop: ${j.shopName}`,
-    `Contact: ${j.personName}`,
-    `Mobile: ${j.customerMobile}`,
-  ];
-  if (j.place) lines.push(`Place: ${j.place}`);
+
+  const isCustomer = j.jobCategory === "customer";
+
+  const lines = ["🏸 *Sports Repair Shop*", "━━━━━━━━━━━━━━━━━━━━", ""];
+
+  if (isCustomer) {
+    lines.push(
+      "👤 *Customer Details*",
+      `Customer Name: ${j.personName}`,
+      `Mobile: ${j.customerMobile}`,
+    );
+  } else {
+    lines.push(
+      "🏪 *Shop Details*",
+      `Shop: ${j.shopName}`,
+      `Contact: ${j.personName}`,
+      `Mobile: ${j.customerMobile}`,
+    );
+    if (j.place) lines.push(`Place: ${j.place}`);
+  }
+
   lines.push("", "🛠️ *Service Details*", `Service: ${j.typeOfWork}`);
   if (j.modelName) lines.push(`Model: ${j.modelName}`);
   lines.push(
@@ -74,6 +87,7 @@ export function JobDetail({
   onOpenChange,
   onEdit,
   onGenerateBill,
+  onCustomerSheet,
 }: Props) {
   const updateJob = useUpdateJob();
 
@@ -82,6 +96,7 @@ export function JobDetail({
   // Capture as a non-nullable local so handlers don't need null assertions
   const currentJob: JobWithId = job;
   const balance = currentJob.totalAmount - currentJob.advancedAmount;
+  const isCustomer = currentJob.jobCategory === "customer";
 
   async function handleCopy() {
     try {
@@ -118,6 +133,14 @@ export function JobDetail({
     onOpenChange(false);
   }
 
+  function handlePrintSheet() {
+    if (isCustomer) {
+      onCustomerSheet(currentJob);
+    } else {
+      onGenerateBill(currentJob);
+    }
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
@@ -132,39 +155,72 @@ export function JobDetail({
         </SheetHeader>
 
         <div className="space-y-5">
-          {/* Shop Info */}
+          {/* Customer / Shop Info */}
           <section>
             <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-              Shop Information
+              {isCustomer ? "Customer Information" : "Shop Information"}
             </h3>
-            <div className="bg-blue-50 rounded-xl p-4 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Shop Name</span>
-                <span className="text-sm font-semibold">
-                  {currentJob.shopName}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Contact Person
-                </span>
-                <span className="text-sm font-semibold">
-                  {currentJob.personName}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Mobile</span>
-                <span className="text-sm font-semibold">
-                  {currentJob.customerMobile}
-                </span>
-              </div>
-              {currentJob.place && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Place</span>
-                  <span className="text-sm font-semibold">
-                    {currentJob.place}
-                  </span>
-                </div>
+            <div
+              className={`rounded-xl p-4 space-y-2 ${
+                isCustomer ? "bg-blue-50" : "bg-green-50"
+              }`}
+            >
+              {isCustomer ? (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Customer Name
+                    </span>
+                    <span className="text-sm font-semibold">
+                      {currentJob.personName}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Mobile No
+                    </span>
+                    <span className="text-sm font-semibold">
+                      {currentJob.customerMobile}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Shop Name
+                    </span>
+                    <span className="text-sm font-semibold">
+                      {currentJob.shopName}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Contact Person
+                    </span>
+                    <span className="text-sm font-semibold">
+                      {currentJob.personName}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Mobile
+                    </span>
+                    <span className="text-sm font-semibold">
+                      {currentJob.customerMobile}
+                    </span>
+                  </div>
+                  {currentJob.place && (
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        Place
+                      </span>
+                      <span className="text-sm font-semibold">
+                        {currentJob.place}
+                      </span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </section>
@@ -268,12 +324,16 @@ export function JobDetail({
                 }`}
               >
                 <span
-                  className={`text-sm font-semibold ${balance > 0 ? "text-amber-700" : "text-green-700"}`}
+                  className={`text-sm font-semibold ${
+                    balance > 0 ? "text-amber-700" : "text-green-700"
+                  }`}
                 >
                   Balance Due
                 </span>
                 <span
-                  className={`text-base font-extrabold ${balance > 0 ? "text-amber-700" : "text-green-700"}`}
+                  className={`text-base font-extrabold ${
+                    balance > 0 ? "text-amber-700" : "text-green-700"
+                  }`}
                 >
                   ₹ {balance.toLocaleString()}
                 </span>
@@ -295,11 +355,20 @@ export function JobDetail({
             </Button>
             <Button
               className="col-span-2 gap-2 bg-primary text-primary-foreground hover:opacity-90 font-semibold"
-              onClick={() => onGenerateBill(currentJob)}
+              onClick={handlePrintSheet}
               data-ocid="job_detail.open_modal_button"
             >
-              <FileText className="h-4 w-4" />
-              Generate Service Bill
+              {isCustomer ? (
+                <>
+                  <Printer className="h-4 w-4" />
+                  Print Job Sheet
+                </>
+              ) : (
+                <>
+                  <FileText className="h-4 w-4" />
+                  Generate Service Bill
+                </>
+              )}
             </Button>
             <Button
               variant="outline"
