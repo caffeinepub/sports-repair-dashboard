@@ -33,18 +33,22 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       className="min-h-screen flex items-center justify-center p-4"
       style={{
         background:
-          "linear-gradient(135deg, #0a2540 0%, #0d4f3c 50%, #1565C0 100%)",
+          "linear-gradient(135deg, #0d2b6e 0%, #0a4f2e 60%, #0d6e4f 100%)",
       }}
     >
-      {/* Background decoration */}
+      {/* Background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
-          className="absolute -top-32 -right-32 w-96 h-96 rounded-full"
-          style={{ background: "rgba(21,101,192,0.18)" }}
+          className="absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl"
+          style={{ background: "rgba(29,78,216,0.25)" }}
         />
         <div
-          className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full"
-          style={{ background: "rgba(27,94,32,0.15)" }}
+          className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl"
+          style={{ background: "rgba(22,163,74,0.22)" }}
+        />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-3xl"
+          style={{ background: "rgba(56,189,248,0.12)" }}
         />
       </div>
 
@@ -53,22 +57,28 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         className={`w-full max-w-sm relative shadow-2xl border-0 overflow-hidden ${
           shaking ? "animate-[shake_0.4s_ease-in-out]" : ""
         }`}
-        style={{ background: "#ffffff" }}
+        style={{
+          background: "#0f1e45",
+          border: "1px solid rgba(56,189,248,0.15)",
+        }}
       >
-        {/* Blue top accent bar */}
+        {/* Top gradient bar */}
         <div
           style={{
-            height: "6px",
-            background: "linear-gradient(90deg, #1565C0, #2e7d32)",
+            height: "5px",
+            background:
+              "linear-gradient(90deg, #1d4ed8 0%, #16a34a 50%, #0ea5e9 100%)",
             width: "100%",
           }}
         />
 
         <CardHeader className="pb-4 pt-8 text-center">
-          {/* Logo mark */}
+          {/* Logo */}
           <div
             className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
-            style={{ background: "linear-gradient(135deg, #1565C0, #2e7d32)" }}
+            style={{
+              background: "linear-gradient(135deg, #1d4ed8 0%, #16a34a 100%)",
+            }}
           >
             <svg
               role="img"
@@ -118,10 +128,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               />
             </svg>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: "#0a2540" }}>
+          <h1 className="text-xl font-bold" style={{ color: "#e0f2fe" }}>
             Sports Repair
           </h1>
-          <p className="text-sm" style={{ color: "#666666" }}>
+          <p className="text-sm" style={{ color: "#7dd3fc" }}>
             Admin Dashboard
           </p>
         </CardHeader>
@@ -131,7 +141,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <div className="space-y-1.5">
               <Label
                 htmlFor="password"
-                style={{ color: "#0a2540", fontWeight: 600 }}
+                style={{ color: "#bae6fd", fontWeight: 600 }}
               >
                 Password
               </Label>
@@ -146,17 +156,17 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     setError("");
                   }}
                   placeholder="Enter your password"
-                  className={`pr-10 ${
+                  className={`pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 ${
                     error
-                      ? "border-red-600 focus-visible:ring-red-600"
-                      : "border-gray-300 focus-visible:ring-blue-500"
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : "focus-visible:ring-blue-400"
                   }`}
                   autoFocus
                 />
                 <button
                   type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
-                  style={{ color: "#888" }}
+                  style={{ color: "#7dd3fc" }}
                   onClick={() => setShowPassword((v) => !v)}
                   data-ocid="login.toggle"
                   aria-label={showPassword ? "Hide password" : "Show password"}
@@ -172,7 +182,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 <p
                   data-ocid="login.error_state"
                   className="text-xs mt-1"
-                  style={{ color: "#c62828" }}
+                  style={{ color: "#fca5a5" }}
                 >
                   {error}
                 </p>
@@ -184,7 +194,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               data-ocid="login.submit_button"
               className="w-full font-bold text-white shadow-md hover:opacity-90 transition-opacity"
               style={{
-                background: "linear-gradient(90deg, #1565C0, #2e7d32)",
+                background: "linear-gradient(90deg, #1d4ed8 0%, #16a34a 100%)",
                 border: "none",
               }}
             >
@@ -192,9 +202,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             </Button>
           </form>
 
-          <p className="text-center text-xs mt-6" style={{ color: "#999" }}>
+          <p className="text-center text-xs mt-6" style={{ color: "#475569" }}>
             Sports Repair{" "}
-            <span style={{ color: "#1565C0", fontWeight: 700 }}>Admin</span>{" "}
+            <span style={{ color: "#38bdf8", fontWeight: 700 }}>Admin</span>{" "}
             Portal
           </p>
         </CardContent>

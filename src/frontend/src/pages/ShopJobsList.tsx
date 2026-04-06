@@ -60,7 +60,6 @@ export function ShopJobsList({
   const [dateTo, setDateTo] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<JobWithId | null>(null);
 
-  // Filter to shop-type jobs only using the jobCategory stored on the backend
   const shopJobs = useMemo(() => {
     if (!allJobs) return [];
     return allJobs.filter(
@@ -114,7 +113,7 @@ export function ShopJobsList({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center">
               <Store className="h-4 w-4 text-white" />
             </div>
             <h1 className="text-2xl font-bold">Sports Shop Jobs</h1>
@@ -124,7 +123,7 @@ export function ShopJobsList({
           </p>
         </div>
         <Button
-          className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="gap-2 bg-green-600 hover:bg-green-700 text-white"
           onClick={onNewShopJob}
           data-ocid="shopjobs.primary_button"
         >
@@ -241,26 +240,29 @@ export function ShopJobsList({
           <div className="overflow-x-auto">
             <table className="w-full text-sm" data-ocid="shopjobs.table">
               <thead>
-                <tr className="border-b bg-emerald-500/10">
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                <tr className="border-b bg-green-500/10">
+                  <th className="text-left px-3 py-3 text-xs font-semibold uppercase tracking-wider text-green-400 w-12">
+                    Sr.
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-green-400">
                     Shop / Person
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-emerald-400 hidden md:table-cell">
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-green-400 hidden md:table-cell">
                     Service
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-green-400">
                     Status
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-emerald-400 hidden lg:table-cell">
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-green-400 hidden lg:table-cell">
                     Date
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-emerald-400 hidden sm:table-cell">
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-green-400 hidden sm:table-cell">
                     Rackets
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                  <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-green-400">
                     Amount
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                  <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-green-400">
                     Actions
                   </th>
                 </tr>
@@ -269,11 +271,16 @@ export function ShopJobsList({
                 {filtered.map((job, i) => (
                   <tr
                     key={String(job.createdAt)}
-                    className="border-b last:border-0 hover:bg-emerald-500/5 transition-colors"
+                    className="border-b last:border-0 hover:bg-green-500/5 transition-colors"
                     data-ocid={`shopjobs.item.${i + 1}`}
                   >
+                    <td className="px-3 py-3 text-center">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-green-500/15 text-green-400 text-xs font-bold">
+                        {i + 1}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
-                      <div className="font-semibold text-emerald-300">
+                      <div className="font-semibold text-green-300">
                         {job.shopName}
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -327,7 +334,7 @@ export function ShopJobsList({
                         <button
                           type="button"
                           onClick={() => onViewJob(job)}
-                          className="p-1.5 rounded-lg hover:bg-emerald-500/10 text-emerald-400 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
                           title="View"
                           data-ocid={`shopjobs.row.item.${i + 1}`}
                         >
@@ -336,7 +343,7 @@ export function ShopJobsList({
                         <button
                           type="button"
                           onClick={() => onPrintSheet(job)}
-                          className="p-1.5 rounded-lg hover:bg-emerald-500/10 text-emerald-400 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
                           title="Print Service Bill"
                           data-ocid={`shopjobs.secondary_button.${i + 1}`}
                         >
@@ -345,7 +352,7 @@ export function ShopJobsList({
                         <button
                           type="button"
                           onClick={() => onEditJob(job)}
-                          className="p-1.5 rounded-lg hover:bg-emerald-500/10 text-emerald-400 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
                           title="Edit"
                           data-ocid={`shopjobs.edit_button.${i + 1}`}
                         >

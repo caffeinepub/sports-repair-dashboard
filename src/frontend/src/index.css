@@ -12,55 +12,55 @@
 @layer base {
   :root {
     --radius: 0.75rem;
-    /* Page background: deep navy */
-    --background: 0.145 0.03 240;
-    --foreground: 0.96 0.005 240;
-    /* Card: dark slate surface */
-    --card: 0.19 0.025 240;
-    --card-foreground: 0.96 0.005 240;
-    --popover: 0.19 0.025 240;
-    --popover-foreground: 0.96 0.005 240;
-    /* Primary: bright teal/cyan */
-    --primary: 0.72 0.17 195;
+    /* Page background: deep royal blue */
+    --background: 0.14 0.04 255;
+    --foreground: 0.96 0.005 230;
+    /* Card: rich dark blue surface */
+    --card: 0.19 0.04 255;
+    --card-foreground: 0.96 0.005 230;
+    --popover: 0.19 0.04 255;
+    --popover-foreground: 0.96 0.005 230;
+    /* Primary: vivid sky blue */
+    --primary: 0.65 0.2 230;
     --primary-foreground: 1 0 0;
-    /* Secondary: slightly lighter surface */
-    --secondary: 0.24 0.02 240;
-    --secondary-foreground: 0.85 0.01 240;
+    /* Secondary */
+    --secondary: 0.24 0.03 255;
+    --secondary-foreground: 0.85 0.01 230;
     /* Muted */
-    --muted: 0.24 0.02 240;
+    --muted: 0.24 0.03 255;
     --muted-foreground: 0.62 0.015 240;
-    /* Accent: teal */
-    --accent: 0.6 0.15 195;
+    /* Accent: bright green */
+    --accent: 0.62 0.19 148;
     --accent-foreground: 1 0 0;
     /* Destructive */
     --destructive: 0.577 0.245 27.325;
     --destructive-foreground: 0.985 0 0;
     /* Border */
-    --border: 0.28 0.02 240;
-    --input: 0.28 0.02 240;
-    --ring: 0.72 0.17 195;
-    /* Charts: teal/cyan/blue tones */
-    --chart-1: 0.72 0.17 195;
-    --chart-2: 0.6 0.15 195;
+    --border: 0.28 0.03 255;
+    --input: 0.28 0.03 255;
+    --ring: 0.65 0.2 230;
+    /* Charts */
+    --chart-1: 0.65 0.2 230;
+    --chart-2: 0.62 0.19 148;
     --chart-3: 0.78 0.18 75;
-    --chart-4: 0.5 0.18 220;
-    --chart-5: 0.45 0.14 195;
-    /* Sidebar: deep green gradient (unchanged) */
-    --sidebar: 0.4 0.15 150;
-    --sidebar-foreground: 0.97 0.025 150;
-    --sidebar-primary: 0.73 0.19 145;
+    --chart-4: 0.55 0.2 260;
+    --chart-5: 0.45 0.15 148;
+    /* Sidebar: deep blue-to-green gradient base */
+    --sidebar: 0.22 0.06 245;
+    --sidebar-foreground: 0.97 0.02 230;
+    --sidebar-primary: 0.62 0.19 148;
     --sidebar-primary-foreground: 1 0 0;
-    --sidebar-accent: 0.48 0.17 148;
-    --sidebar-accent-foreground: 0.97 0.025 150;
-    --sidebar-border: 0.38 0.13 148;
-    --sidebar-ring: 0.55 0.19 145;
-    /* Custom semantic tokens */
+    --sidebar-accent: 0.32 0.08 245;
+    --sidebar-accent-foreground: 0.97 0.02 230;
+    --sidebar-border: 0.28 0.05 245;
+    --sidebar-ring: 0.62 0.19 148;
+    /* Status tokens */
     --status-pending: 0.78 0.18 75;
-    --status-inprogress: 0.72 0.17 195;
-    --status-completed: 0.6 0.15 195;
-    /* KPI tints: dark-mode surfaces */
-    --kpi-blue-tint: 0.22 0.04 240;
-    --kpi-green-tint: 0.22 0.05 155;
+    --status-inprogress: 0.65 0.2 230;
+    --status-completed: 0.62 0.19 148;
+    /* KPI tints */
+    --kpi-blue-tint: 0.22 0.05 255;
+    --kpi-green-tint: 0.22 0.06 148;
     --kpi-amber-tint: 0.22 0.04 75;
     --kpi-purple-tint: 0.22 0.04 280;
   }
@@ -76,11 +76,11 @@
 
 @layer utilities {
   .sidebar-gradient {
-    background: linear-gradient(180deg, #0a6e3a 0%, #085c30 100%);
+    background: linear-gradient(180deg, #0d2b6e 0%, #0a4f2e 100%);
   }
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: oklch(0.48 0.17 148) transparent;
+    scrollbar-color: oklch(0.45 0.17 148) transparent;
   }
   .kpi-blue {
     background-color: oklch(var(--kpi-blue-tint));

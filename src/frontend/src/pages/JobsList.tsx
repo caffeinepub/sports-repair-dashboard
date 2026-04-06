@@ -61,7 +61,6 @@ export function JobsList({
 
   const filtered = useMemo(() => {
     if (!jobs) return [];
-    // Show jobs that are customer type OR have no shopName (legacy jobs before category was added)
     const customerJobs = jobs.filter(
       (j) =>
         j.jobCategory === "customer" ||
@@ -84,7 +83,6 @@ export function JobsList({
     });
   }, [jobs, search, statusFilter, typeFilter, dateFrom, dateTo]);
 
-  // Count of all customer jobs (unfiltered)
   const totalCustomerJobs = useMemo(() => {
     if (!jobs) return 0;
     return jobs.filter(
@@ -235,6 +233,9 @@ export function JobsList({
             <table className="w-full text-sm" data-ocid="jobs.table">
               <thead>
                 <tr className="border-b bg-muted/30">
+                  <th className="text-left px-3 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground w-12">
+                    Sr.
+                  </th>
                   <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Customer
                   </th>
@@ -265,6 +266,11 @@ export function JobsList({
                     className="border-b last:border-0 hover:bg-muted/20 transition-colors"
                     data-ocid={`jobs.item.${i + 1}`}
                   >
+                    <td className="px-3 py-3 text-center">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/15 text-primary text-xs font-bold">
+                        {i + 1}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
                       <div className="font-semibold">{job.personName}</div>
                       <div className="text-xs text-muted-foreground">
