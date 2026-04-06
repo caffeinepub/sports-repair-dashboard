@@ -57,6 +57,9 @@ export default function App() {
   const [customerSheetJob, setCustomerSheetJob] = useState<JobWithId | null>(
     null,
   );
+  const [customerSheetSerialNo, setCustomerSheetSerialNo] = useState<
+    number | undefined
+  >(undefined);
   const [customerSheetOpen, setCustomerSheetOpen] = useState(false);
 
   useEffect(() => {
@@ -102,8 +105,9 @@ export default function App() {
     setBillOpen(true);
   }
 
-  function openCustomerSheet(job: JobWithId) {
+  function openCustomerSheet(job: JobWithId, serialNo?: number) {
     setCustomerSheetJob(job);
+    setCustomerSheetSerialNo(serialNo);
     setCustomerSheetOpen(true);
   }
 
@@ -267,7 +271,7 @@ export default function App() {
               onNewJob={openNewJob}
               onViewJob={openViewJob}
               onEditJob={openEditJob}
-              onPrintSheet={openCustomerSheet}
+              onPrintSheet={(job, srNo) => openCustomerSheet(job, srNo)}
             />
           )}
           {page === "shopjobs" && (
@@ -323,6 +327,7 @@ export default function App() {
         job={customerSheetJob}
         open={customerSheetOpen}
         onOpenChange={setCustomerSheetOpen}
+        serialNo={customerSheetSerialNo}
       />
       <Toaster richColors position="top-right" />
     </div>

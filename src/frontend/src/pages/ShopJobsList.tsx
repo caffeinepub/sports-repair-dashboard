@@ -60,7 +60,8 @@ export function ShopJobsList({
   const [dateTo, setDateTo] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<JobWithId | null>(null);
 
-  const shopJobs = useMemo(() => {
+  // Full shop job list (unfiltered)
+  const allShopJobs = useMemo(() => {
     if (!allJobs) return [];
     return allJobs.filter(
       (j) =>
@@ -70,7 +71,7 @@ export function ShopJobsList({
   }, [allJobs]);
 
   const filtered = useMemo(() => {
-    return shopJobs.filter((j) => {
+    return allShopJobs.filter((j) => {
       const q = search.toLowerCase();
       const matchSearch =
         !search ||
@@ -85,7 +86,7 @@ export function ShopJobsList({
       const matchTo = !dateTo || j.dateOfJob <= dateTo;
       return matchSearch && matchStatus && matchType && matchFrom && matchTo;
     });
-  }, [shopJobs, search, statusFilter, typeFilter, dateFrom, dateTo]);
+  }, [allShopJobs, search, statusFilter, typeFilter, dateFrom, dateTo]);
 
   const hasActiveFilters =
     search !== "" ||
@@ -100,6 +101,14 @@ export function ShopJobsList({
     setTypeFilter("All Types");
     setDateFrom("");
     setDateTo("");
+  }
+
+  // Get stable serial number from full shop jobs list
+  function getSerialNo(job: JobWithId): number {
+    const idx = allShopJobs.findIndex(
+      (j) => j._id === job._id && j.createdAt === job.createdAt,
+    );
+    return idx + 1;
   }
 
   async function handleDelete() {
@@ -119,7 +128,7 @@ export function ShopJobsList({
             <h1 className="text-2xl font-bold">Sports Shop Jobs</h1>
           </div>
           <p className="text-muted-foreground text-sm mt-1 ml-10">
-            {filtered.length} of {shopJobs.length} shop jobs
+            {filtered.length} of {allShopJobs.length} shop jobs
           </p>
         </div>
         <Button
@@ -231,7 +240,7 @@ export function ShopJobsList({
             <Store className="h-10 w-10 mx-auto mb-3 opacity-30" />
             <p className="font-medium">No shop jobs found</p>
             <p className="text-sm mt-1">
-              {shopJobs.length === 0
+              {allShopJobs.length === 0
                 ? 'Create your first shop job using the "New Shop Job" button.'
                 : "Try adjusting your search or filters."}
             </p>
@@ -268,114 +277,117 @@ export function ShopJobsList({
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((job, i) => (
-                  <tr
-                    key={String(job.createdAt)}
-                    className="border-b last:border-0 hover:bg-green-500/5 transition-colors"
-                    data-ocid={`shopjobs.item.${i + 1}`}
-                  >
-                    <td className="px-3 py-3 text-center">
-                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-green-500/15 text-green-400 text-xs font-bold">
-                        {i + 1}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="font-semibold text-green-300">
-                        {job.shopName}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {job.personName}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {job.customerMobile}
-                      </div>
-                      {job.place && (
-                        <div className="text-xs text-muted-foreground italic">
-                          📍 {job.place}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <span className="text-xs max-w-[180px] line-clamp-2 block">
-                        {job.typeOfWork}
-                      </span>
-                      {job.modelName && (
-                        <span className="text-xs text-muted-foreground">
-                          {job.modelName}
+                {filtered.map((job) => {
+                  const srNo = getSerialNo(job);
+                  return (
+                    <tr
+                      key={String(job._id ?? job.createdAt)}
+                      className="border-b last:border-0 hover:bg-green-500/5 transition-colors"
+                      data-ocid={`shopjobs.item.${srNo}`}
+                    >
+                      <td className="px-3 py-3 text-center">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-green-500/15 text-green-400 text-xs font-bold">
+                          {srNo}
                         </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusBadge status={job.jobStatus} />
-                    </td>
-                    <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground">
-                      {job.dateOfJob}
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <span className="text-xs font-medium">
-                        {String(job.noOfRackets)} pcs
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="font-semibold">
-                        ₹{job.totalAmount.toLocaleString()}
-                      </div>
-                      {job.totalAmount - job.advancedAmount > 0 && (
-                        <div className="text-xs text-amber-400">
-                          Bal: ₹
-                          {(
-                            job.totalAmount - job.advancedAmount
-                          ).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-semibold text-green-300">
+                          {job.shopName}
                         </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => onViewJob(job)}
-                          className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
-                          title="View"
-                          data-ocid={`shopjobs.row.item.${i + 1}`}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onPrintSheet(job)}
-                          className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
-                          title="Print Service Bill"
-                          data-ocid={`shopjobs.secondary_button.${i + 1}`}
-                        >
-                          <Printer className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onEditJob(job)}
-                          className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
-                          title="Edit"
-                          data-ocid={`shopjobs.edit_button.${i + 1}`}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(job)}
-                          className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
-                          title="Delete"
-                          data-ocid={`shopjobs.delete_button.${i + 1}`}
-                        >
-                          {deleteJob.isPending &&
-                          deleteJob.variables === job._id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                        <div className="text-xs text-muted-foreground">
+                          {job.personName}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {job.customerMobile}
+                        </div>
+                        {job.place && (
+                          <div className="text-xs text-muted-foreground italic">
+                            📍 {job.place}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        <span className="text-xs max-w-[180px] line-clamp-2 block">
+                          {job.typeOfWork}
+                        </span>
+                        {job.modelName && (
+                          <span className="text-xs text-muted-foreground">
+                            {job.modelName}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <StatusBadge status={job.jobStatus} />
+                      </td>
+                      <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground">
+                        {job.dateOfJob}
+                      </td>
+                      <td className="px-4 py-3 hidden sm:table-cell">
+                        <span className="text-xs font-medium">
+                          {String(job.noOfRackets)} pcs
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="font-semibold">
+                          ₹{job.totalAmount.toLocaleString()}
+                        </div>
+                        {job.totalAmount - job.advancedAmount > 0 && (
+                          <div className="text-xs text-amber-400">
+                            Bal: ₹
+                            {(
+                              job.totalAmount - job.advancedAmount
+                            ).toLocaleString()}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => onViewJob(job)}
+                            className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
+                            title="View"
+                            data-ocid={`shopjobs.row.item.${srNo}`}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onPrintSheet(job)}
+                            className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
+                            title="Print Service Bill"
+                            data-ocid={`shopjobs.secondary_button.${srNo}`}
+                          >
+                            <Printer className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onEditJob(job)}
+                            className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-400 transition-colors"
+                            title="Edit"
+                            data-ocid={`shopjobs.edit_button.${srNo}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeleteTarget(job)}
+                            className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+                            title="Delete"
+                            data-ocid={`shopjobs.delete_button.${srNo}`}
+                          >
+                            {deleteJob.isPending &&
+                            deleteJob.variables === job._id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

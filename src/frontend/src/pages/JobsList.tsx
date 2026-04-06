@@ -41,7 +41,7 @@ interface Props {
   onNewJob: () => void;
   onViewJob: (job: JobWithId) => void;
   onEditJob: (job: JobWithId) => void;
-  onPrintSheet: (job: JobWithId) => void;
+  onPrintSheet: (job: JobWithId, serialNo: number) => void;
 }
 
 export function JobsList({
@@ -59,14 +59,18 @@ export function JobsList({
   const [dateTo, setDateTo] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<JobWithId | null>(null);
 
-  const filtered = useMemo(() => {
+  // Full customer job list (unfiltered), sorted by createdAt desc
+  const allCustomerJobs = useMemo(() => {
     if (!jobs) return [];
-    const customerJobs = jobs.filter(
+    return jobs.filter(
       (j) =>
         j.jobCategory === "customer" ||
         (j.jobCategory !== "shop" && !j.shopName),
     );
-    return customerJobs.filter((j) => {
+  }, [jobs]);
+
+  const filtered = useMemo(() => {
+    return allCustomerJobs.filter((j) => {
       const q = search.toLowerCase();
       const matchSearch =
         !search ||
@@ -81,16 +85,7 @@ export function JobsList({
       const matchTo = !dateTo || j.dateOfJob <= dateTo;
       return matchSearch && matchStatus && matchType && matchFrom && matchTo;
     });
-  }, [jobs, search, statusFilter, typeFilter, dateFrom, dateTo]);
-
-  const totalCustomerJobs = useMemo(() => {
-    if (!jobs) return 0;
-    return jobs.filter(
-      (j) =>
-        j.jobCategory === "customer" ||
-        (j.jobCategory !== "shop" && !j.shopName),
-    ).length;
-  }, [jobs]);
+  }, [allCustomerJobs, search, statusFilter, typeFilter, dateFrom, dateTo]);
 
   const hasActiveFilters =
     search !== "" ||
@@ -107,6 +102,14 @@ export function JobsList({
     setDateTo("");
   }
 
+  // Get the stable serial number for a job based on its position in the full sorted list
+  function getSerialNo(job: JobWithId): number {
+    const idx = allCustomerJobs.findIndex(
+      (j) => j._id === job._id && j.createdAt === job.createdAt,
+    );
+    return idx + 1;
+  }
+
   async function handleDelete() {
     if (!deleteTarget || !deleteTarget._id) return;
     await deleteJob.mutateAsync(deleteTarget._id);
@@ -119,7 +122,7 @@ export function JobsList({
         <div>
           <h1 className="text-2xl font-bold">All Job Sheets</h1>
           <p className="text-muted-foreground text-sm mt-0.5">
-            {filtered.length} of {totalCustomerJobs} jobs
+            {filtered.length} of {allCustomerJobs.length} jobs
           </p>
         </div>
         <Button
@@ -260,107 +263,110 @@ export function JobsList({
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((job, i) => (
-                  <tr
-                    key={String(job.createdAt)}
-                    className="border-b last:border-0 hover:bg-muted/20 transition-colors"
-                    data-ocid={`jobs.item.${i + 1}`}
-                  >
-                    <td className="px-3 py-3 text-center">
-                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/15 text-primary text-xs font-bold">
-                        {i + 1}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="font-semibold">{job.personName}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {job.customerMobile}
-                      </div>
-                      {job.place && (
-                        <div className="text-xs text-muted-foreground">
-                          📍 {job.place}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <span className="text-xs max-w-[180px] line-clamp-2 block">
-                        {job.typeOfWork}
-                      </span>
-                      {job.modelName && (
-                        <span className="text-xs text-muted-foreground">
-                          {job.modelName}
+                {filtered.map((job) => {
+                  const srNo = getSerialNo(job);
+                  return (
+                    <tr
+                      key={String(job._id ?? job.createdAt)}
+                      className="border-b last:border-0 hover:bg-muted/20 transition-colors"
+                      data-ocid={`jobs.item.${srNo}`}
+                    >
+                      <td className="px-3 py-3 text-center">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/15 text-primary text-xs font-bold">
+                          {srNo}
                         </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusBadge status={job.jobStatus} />
-                    </td>
-                    <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground">
-                      {job.dateOfJob}
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <span className="text-xs">{job.paymentMode}</span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="font-semibold">
-                        ₹{job.totalAmount.toLocaleString()}
-                      </div>
-                      {job.totalAmount - job.advancedAmount > 0 && (
-                        <div className="text-xs text-amber-400">
-                          Bal: ₹
-                          {(
-                            job.totalAmount - job.advancedAmount
-                          ).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-semibold">{job.personName}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {job.customerMobile}
                         </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => onViewJob(job)}
-                          className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
-                          title="View"
-                          data-ocid={`jobs.row.item.${i + 1}`}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onPrintSheet(job)}
-                          className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
-                          title="Print Job Sheet"
-                          data-ocid={`jobs.secondary_button.${i + 1}`}
-                        >
-                          <Printer className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onEditJob(job)}
-                          className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
-                          title="Edit"
-                          data-ocid={`jobs.edit_button.${i + 1}`}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(job)}
-                          className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
-                          title="Delete"
-                          data-ocid={`jobs.delete_button.${i + 1}`}
-                        >
-                          {deleteJob.isPending &&
-                          deleteJob.variables === job._id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                        {job.place && (
+                          <div className="text-xs text-muted-foreground">
+                            📍 {job.place}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        <span className="text-xs max-w-[180px] line-clamp-2 block">
+                          {job.typeOfWork}
+                        </span>
+                        {job.modelName && (
+                          <span className="text-xs text-muted-foreground">
+                            {job.modelName}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <StatusBadge status={job.jobStatus} />
+                      </td>
+                      <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground">
+                        {job.dateOfJob}
+                      </td>
+                      <td className="px-4 py-3 hidden sm:table-cell">
+                        <span className="text-xs">{job.paymentMode}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="font-semibold">
+                          ₹{job.totalAmount.toLocaleString()}
+                        </div>
+                        {job.totalAmount - job.advancedAmount > 0 && (
+                          <div className="text-xs text-amber-400">
+                            Bal: ₹
+                            {(
+                              job.totalAmount - job.advancedAmount
+                            ).toLocaleString()}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => onViewJob(job)}
+                            className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
+                            title="View"
+                            data-ocid={`jobs.row.item.${srNo}`}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onPrintSheet(job, srNo)}
+                            className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
+                            title="Print Job Sheet"
+                            data-ocid={`jobs.secondary_button.${srNo}`}
+                          >
+                            <Printer className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onEditJob(job)}
+                            className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
+                            title="Edit"
+                            data-ocid={`jobs.edit_button.${srNo}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeleteTarget(job)}
+                            className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+                            title="Delete"
+                            data-ocid={`jobs.delete_button.${srNo}`}
+                          >
+                            {deleteJob.isPending &&
+                            deleteJob.variables === job._id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

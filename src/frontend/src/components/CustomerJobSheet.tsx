@@ -14,9 +14,10 @@ interface Props {
   job: JobWithId | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  serialNo?: number;
 }
 
-function buildCustomerShareText(j: JobWithId): string {
+function buildCustomerShareText(j: JobWithId, jobNo: string): string {
   const balanceAmt = j.totalAmount - j.advancedAmount;
   const statusEmoji =
     j.jobStatus === "Completed"
@@ -27,6 +28,8 @@ function buildCustomerShareText(j: JobWithId): string {
   const lines = [
     "🏸 *Sports Repair Shop*",
     "━━━━━━━━━━━━━━━━━━━━",
+    "",
+    `*Job No: #${jobNo}*`,
     "",
     "👤 *Customer Details*",
     `Customer Name: ${j.personName}`,
@@ -49,11 +52,18 @@ function buildCustomerShareText(j: JobWithId): string {
   return lines.join("\n");
 }
 
-export function CustomerJobSheet({ job, open, onOpenChange }: Props) {
+export function CustomerJobSheet({ job, open, onOpenChange, serialNo }: Props) {
   if (!job) return null;
 
   const balance = job.totalAmount - job.advancedAmount;
-  const jobNo = String(job.createdAt).slice(-6);
+  // Use the backend job ID (_id) as the job number; fallback to serialNo or createdAt
+  const jobNo =
+    job._id != null && job._id !== BigInt(0)
+      ? String(job._id)
+      : serialNo != null
+        ? String(serialNo)
+        : String(job.createdAt);
+
   const today = new Date().toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "2-digit",
@@ -68,7 +78,7 @@ export function CustomerJobSheet({ job, open, onOpenChange }: Props) {
     } else {
       mobile = mobile.slice(1);
     }
-    const text = encodeURIComponent(buildCustomerShareText(job!));
+    const text = encodeURIComponent(buildCustomerShareText(job!, jobNo));
     window.open(`https://wa.me/${mobile}?text=${text}`, "_blank");
   }
 
