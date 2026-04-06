@@ -300,7 +300,7 @@ export function JobsList({
                         ₹{job.totalAmount.toLocaleString()}
                       </div>
                       {job.totalAmount - job.advancedAmount > 0 && (
-                        <div className="text-xs text-amber-600">
+                        <div className="text-xs text-amber-400">
                           Bal: ₹
                           {(
                             job.totalAmount - job.advancedAmount
@@ -313,7 +313,7 @@ export function JobsList({
                         <button
                           type="button"
                           onClick={() => onViewJob(job)}
-                          className="p-1.5 rounded-lg hover:bg-blue-50 text-primary transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
                           title="View"
                           data-ocid={`jobs.row.item.${i + 1}`}
                         >
@@ -322,7 +322,7 @@ export function JobsList({
                         <button
                           type="button"
                           onClick={() => onPrintSheet(job)}
-                          className="p-1.5 rounded-lg hover:bg-blue-50 text-primary transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
                           title="Print Job Sheet"
                           data-ocid={`jobs.secondary_button.${i + 1}`}
                         >
@@ -331,7 +331,7 @@ export function JobsList({
                         <button
                           type="button"
                           onClick={() => onEditJob(job)}
-                          className="p-1.5 rounded-lg hover:bg-blue-50 text-primary transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
                           title="Edit"
                           data-ocid={`jobs.edit_button.${i + 1}`}
                         >
@@ -340,7 +340,7 @@ export function JobsList({
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(job)}
-                          className="p-1.5 rounded-lg hover:bg-red-50 text-destructive transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
                           title="Delete"
                           data-ocid={`jobs.delete_button.${i + 1}`}
                         >

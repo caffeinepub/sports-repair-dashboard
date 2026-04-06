@@ -230,10 +230,10 @@ function SummaryCards({ jobs }: SummaryCardsProps) {
                       <span
                         className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                           row.status === "Completed"
-                            ? "bg-green-100 text-green-700"
+                            ? "bg-emerald-500/20 text-emerald-300"
                             : row.status === "In Progress"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-amber-100 text-amber-700"
+                              ? "bg-cyan-500/20 text-cyan-300"
+                              : "bg-amber-500/20 text-amber-300"
                         }`}
                       >
                         {row.status}
@@ -440,10 +440,10 @@ function MonthlyStatement({ jobs, isShop = false }: MonthlyStatementProps) {
                           <span
                             className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                               job.jobStatus === "Completed"
-                                ? "bg-green-100 text-green-700"
+                                ? "bg-emerald-500/20 text-emerald-300"
                                 : job.jobStatus === "In Progress"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-amber-100 text-amber-700"
+                                  ? "bg-cyan-500/20 text-cyan-300"
+                                  : "bg-amber-500/20 text-amber-300"
                             }`}
                           >
                             {job.jobStatus}
@@ -460,7 +460,7 @@ function MonthlyStatement({ jobs, isShop = false }: MonthlyStatementProps) {
                         </TableCell>
                         <TableCell
                           className={`text-xs py-2.5 text-right font-semibold ${
-                            balance > 0 ? "text-amber-600" : "text-green-600"
+                            balance > 0 ? "text-amber-400" : "text-emerald-400"
                           }`}
                         >
                           ₹{balance.toLocaleString()}
@@ -487,8 +487,8 @@ function MonthlyStatement({ jobs, isShop = false }: MonthlyStatementProps) {
                     <TableCell
                       className={`text-xs py-3 text-right font-bold ${
                         monthlyTotals.balance > 0
-                          ? "text-amber-600"
-                          : "text-green-600"
+                          ? "text-amber-400"
+                          : "text-emerald-400"
                       }`}
                     >
                       ₹{monthlyTotals.balance.toLocaleString()}

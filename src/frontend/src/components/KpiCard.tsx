@@ -8,30 +8,31 @@ interface Props {
   sub?: string;
 }
 
+// Icon and value accent colors that pop on dark backgrounds
 const tintMap = {
   blue: {
-    bg: "bg-blue-50",
-    iconBg: "bg-blue-100",
-    iconText: "text-blue-600",
-    valueText: "text-blue-800",
+    bg: "kpi-blue",
+    iconBg: "bg-cyan-500/20",
+    iconText: "text-cyan-400",
+    valueText: "text-cyan-300",
   },
   green: {
-    bg: "bg-green-50",
-    iconBg: "bg-green-100",
-    iconText: "text-green-600",
-    valueText: "text-green-800",
+    bg: "kpi-green",
+    iconBg: "bg-emerald-500/20",
+    iconText: "text-emerald-400",
+    valueText: "text-emerald-300",
   },
   amber: {
-    bg: "bg-amber-50",
-    iconBg: "bg-amber-100",
-    iconText: "text-amber-600",
-    valueText: "text-amber-800",
+    bg: "kpi-amber",
+    iconBg: "bg-amber-500/20",
+    iconText: "text-amber-400",
+    valueText: "text-amber-300",
   },
   purple: {
-    bg: "bg-purple-50",
-    iconBg: "bg-purple-100",
-    iconText: "text-purple-600",
-    valueText: "text-purple-800",
+    bg: "kpi-purple",
+    iconBg: "bg-violet-500/20",
+    iconText: "text-violet-400",
+    valueText: "text-violet-300",
   },
 };
 
@@ -39,7 +40,7 @@ export function KpiCard({ label, value, icon, tint, sub }: Props) {
   const t = tintMap[tint];
   return (
     <div
-      className={`rounded-xl ${t.bg} shadow-card p-5 flex items-center gap-4`}
+      className={`rounded-xl ${t.bg} shadow-card p-5 flex items-center gap-4 border border-white/5`}
     >
       <div
         className={`w-12 h-12 rounded-xl ${t.iconBg} ${t.iconText} flex items-center justify-center shrink-0`}

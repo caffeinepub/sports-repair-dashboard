@@ -12,40 +12,40 @@
 @layer base {
   :root {
     --radius: 0.75rem;
-    /* Page background: light green tint */
-    --background: 0.968 0.012 150;
-    --foreground: 0.185 0.025 150;
-    /* Card: white */
-    --card: 1 0 0;
-    --card-foreground: 0.185 0.025 150;
-    --popover: 1 0 0;
-    --popover-foreground: 0.185 0.025 150;
-    /* Primary: #16A34A (green-600) */
-    --primary: 0.55 0.19 145;
+    /* Page background: deep navy */
+    --background: 0.145 0.03 240;
+    --foreground: 0.96 0.005 240;
+    /* Card: dark slate surface */
+    --card: 0.19 0.025 240;
+    --card-foreground: 0.96 0.005 240;
+    --popover: 0.19 0.025 240;
+    --popover-foreground: 0.96 0.005 240;
+    /* Primary: bright teal/cyan */
+    --primary: 0.72 0.17 195;
     --primary-foreground: 1 0 0;
-    /* Secondary: light green tint */
-    --secondary: 0.96 0.025 150;
-    --secondary-foreground: 0.55 0.19 145;
+    /* Secondary: slightly lighter surface */
+    --secondary: 0.24 0.02 240;
+    --secondary-foreground: 0.85 0.01 240;
     /* Muted */
-    --muted: 0.96 0.01 150;
-    --muted-foreground: 0.55 0.02 150;
-    /* Accent: teal/green */
-    --accent: 0.73 0.19 145;
+    --muted: 0.24 0.02 240;
+    --muted-foreground: 0.62 0.015 240;
+    /* Accent: teal */
+    --accent: 0.6 0.15 195;
     --accent-foreground: 1 0 0;
     /* Destructive */
     --destructive: 0.577 0.245 27.325;
     --destructive-foreground: 0.985 0 0;
     /* Border */
-    --border: 0.92 0.012 150;
-    --input: 0.92 0.012 150;
-    --ring: 0.55 0.19 145;
-    /* Charts */
-    --chart-1: 0.55 0.19 145;
-    --chart-2: 0.73 0.19 145;
+    --border: 0.28 0.02 240;
+    --input: 0.28 0.02 240;
+    --ring: 0.72 0.17 195;
+    /* Charts: teal/cyan/blue tones */
+    --chart-1: 0.72 0.17 195;
+    --chart-2: 0.6 0.15 195;
     --chart-3: 0.78 0.18 75;
-    --chart-4: 0.42 0.155 155;
-    --chart-5: 0.62 0.18 165;
-    /* Sidebar: deep green #0A6E3A */
+    --chart-4: 0.5 0.18 220;
+    --chart-5: 0.45 0.14 195;
+    /* Sidebar: deep green gradient (unchanged) */
     --sidebar: 0.4 0.15 150;
     --sidebar-foreground: 0.97 0.025 150;
     --sidebar-primary: 0.73 0.19 145;
@@ -56,11 +56,13 @@
     --sidebar-ring: 0.55 0.19 145;
     /* Custom semantic tokens */
     --status-pending: 0.78 0.18 75;
-    --status-inprogress: 0.55 0.19 145;
-    --status-completed: 0.73 0.19 145;
-    --kpi-blue-tint: 0.965 0.025 150;
-    --kpi-green-tint: 0.965 0.04 150;
-    --kpi-amber-tint: 0.975 0.035 75;
+    --status-inprogress: 0.72 0.17 195;
+    --status-completed: 0.6 0.15 195;
+    /* KPI tints: dark-mode surfaces */
+    --kpi-blue-tint: 0.22 0.04 240;
+    --kpi-green-tint: 0.22 0.05 155;
+    --kpi-amber-tint: 0.22 0.04 75;
+    --kpi-purple-tint: 0.22 0.04 280;
   }
 
   * {
@@ -79,6 +81,18 @@
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: oklch(0.48 0.17 148) transparent;
+  }
+  .kpi-blue {
+    background-color: oklch(var(--kpi-blue-tint));
+  }
+  .kpi-green {
+    background-color: oklch(var(--kpi-green-tint));
+  }
+  .kpi-amber {
+    background-color: oklch(var(--kpi-amber-tint));
+  }
+  .kpi-purple {
+    background-color: oklch(var(--kpi-purple-tint));
   }
   .print-only {
     display: none;
