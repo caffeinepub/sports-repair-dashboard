@@ -28,10 +28,13 @@ export interface JobRecord {
   'typeOfWork' : string,
   'jobCategory' : string,
 }
+export interface JobWithId extends JobRecord {
+  'id' : bigint,
+}
 export interface _SERVICE {
   'createJob' : ActorMethod<[JobRecord], bigint>,
   'deleteJob' : ActorMethod<[bigint], undefined>,
-  'getAllJobs' : ActorMethod<[], Array<JobRecord>>,
+  'getAllJobs' : ActorMethod<[], Array<JobWithId>>,
   'getJobById' : ActorMethod<[bigint], JobRecord>,
   'getSummaryStats' : ActorMethod<
     [],

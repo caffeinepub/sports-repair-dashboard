@@ -27,10 +27,30 @@ export const JobRecord = IDL.Record({
   'jobCategory' : IDL.Text,
 });
 
+export const JobWithId = IDL.Record({
+  'id' : IDL.Nat,
+  'noOfRackets' : IDL.Nat,
+  'dateOfJob' : IDL.Text,
+  'advancedAmount' : IDL.Float64,
+  'serviceCharges' : IDL.Float64,
+  'jobDescription' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'jobStatus' : IDL.Text,
+  'customerMobile' : IDL.Text,
+  'personName' : IDL.Text,
+  'totalAmount' : IDL.Float64,
+  'modelName' : IDL.Text,
+  'shopName' : IDL.Text,
+  'paymentMode' : IDL.Text,
+  'place' : IDL.Text,
+  'typeOfWork' : IDL.Text,
+  'jobCategory' : IDL.Text,
+});
+
 export const idlService = IDL.Service({
   'createJob' : IDL.Func([JobRecord], [IDL.Nat], []),
   'deleteJob' : IDL.Func([IDL.Nat], [], []),
-  'getAllJobs' : IDL.Func([], [IDL.Vec(JobRecord)], ['query']),
+  'getAllJobs' : IDL.Func([], [IDL.Vec(JobWithId)], ['query']),
   'getJobById' : IDL.Func([IDL.Nat], [JobRecord], ['query']),
   'getSummaryStats' : IDL.Func(
       [],
@@ -69,11 +89,31 @@ export const idlFactory = ({ IDL }) => {
     'typeOfWork' : IDL.Text,
     'jobCategory' : IDL.Text,
   });
+
+  const JobWithId = IDL.Record({
+    'id' : IDL.Nat,
+    'noOfRackets' : IDL.Nat,
+    'dateOfJob' : IDL.Text,
+    'advancedAmount' : IDL.Float64,
+    'serviceCharges' : IDL.Float64,
+    'jobDescription' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'jobStatus' : IDL.Text,
+    'customerMobile' : IDL.Text,
+    'personName' : IDL.Text,
+    'totalAmount' : IDL.Float64,
+    'modelName' : IDL.Text,
+    'shopName' : IDL.Text,
+    'paymentMode' : IDL.Text,
+    'place' : IDL.Text,
+    'typeOfWork' : IDL.Text,
+    'jobCategory' : IDL.Text,
+  });
   
   return IDL.Service({
     'createJob' : IDL.Func([JobRecord], [IDL.Nat], []),
     'deleteJob' : IDL.Func([IDL.Nat], [], []),
-    'getAllJobs' : IDL.Func([], [IDL.Vec(JobRecord)], ['query']),
+    'getAllJobs' : IDL.Func([], [IDL.Vec(JobWithId)], ['query']),
     'getJobById' : IDL.Func([IDL.Nat], [JobRecord], ['query']),
     'getSummaryStats' : IDL.Func(
         [],
