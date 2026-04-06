@@ -5,8 +5,7 @@ import Int "mo:core/Int";
 import Float "mo:core/Float";
 
 actor {
-  // V1 record type (no jobCategory) — kept here so the stable Map type
-  // matches the previously deployed schema and the upgrade is accepted.
+  // V1 record type (no jobCategory) — kept for upgrade compatibility
   type JobRecordV1 = {
     shopName : Text;
     personName : Text;
@@ -66,20 +65,20 @@ actor {
     jobCategory : Text;
   };
 
-  var nextJobId : Nat = 1;
-
-  // This stable var uses V1 type so it is upgrade-compatible with the
-  // previously deployed canister. On postupgrade we migrate its contents
-  // into jobRecordsV2 and clear it.
+  // V1 stable map — must be kept to avoid compatibility error on upgrade.
+  // Contents are migrated to stableJobsV2 in postupgrade and this map
+  // remains empty thereafter.
   let jobRecords = Map.empty<Nat, JobRecordV1>();
 
-  // New stable storage for V2 records.
+  // Stable storage — survives all upgrades
   stable var stableJobsV2 : [(Nat, JobRecord)] = [];
   stable var stableNextJobId : Nat = 1;
 
-  // Working V2 map (not stable — rebuilt each time from stableJobsV2)
+  // Working in-memory map — rebuilt from stable storage on each upgrade
   let jobRecordsV2 = Map.empty<Nat, JobRecord>();
+  var nextJobId : Nat = 1;
 
+  // Restore working map from stable storage at startup/upgrade
   system func postupgrade() {
     // 1. Restore V2 records from stable array
     for ((id, job) in stableJobsV2.vals()) {
@@ -87,7 +86,7 @@ actor {
     };
     stableJobsV2 := [];
 
-    // 2. Migrate any remaining V1 records that haven't been migrated yet
+    // 2. Migrate any remaining V1 records
     for ((id, old) in jobRecords.entries().toArray().vals()) {
       if (not jobRecordsV2.containsKey(id)) {
         let category = if (old.shopName != "") { "shop" } else { "customer" };
@@ -117,6 +116,7 @@ actor {
     if (nextJobId < 1) { nextJobId := 1 };
   };
 
+  // Save working map to stable storage before upgrade
   system func preupgrade() {
     stableJobsV2 := jobRecordsV2.entries().toArray();
     stableNextJobId := nextJobId;
