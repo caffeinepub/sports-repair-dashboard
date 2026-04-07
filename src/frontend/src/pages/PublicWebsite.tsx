@@ -4,6 +4,7 @@ import {
   CheckCircle,
   Clock,
   Loader2,
+  Lock,
   Menu,
   MessageCircle,
   Phone,
@@ -292,6 +293,19 @@ export function PublicWebsite() {
             WhatsApp Us
           </a>
 
+          {/* Desktop Admin Login */}
+          <button
+            type="button"
+            onClick={() => {
+              window.location.hash = "admin";
+            }}
+            data-ocid="nav.admin_login.button"
+            className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-[#0B5E86] text-[#0B5E86] hover:bg-[#0B5E86] hover:text-white transition-all"
+          >
+            <Lock className="h-3.5 w-3.5" />
+            Admin Login
+          </button>
+
           {/* Mobile hamburger */}
           <button
             type="button"
@@ -335,6 +349,18 @@ export function PublicWebsite() {
               <MessageCircle className="h-4 w-4" />
               WhatsApp Us
             </a>
+            <button
+              type="button"
+              onClick={() => {
+                window.location.hash = "admin";
+                setMobileMenuOpen(false);
+              }}
+              data-ocid="nav.mobile_admin_login.button"
+              className="flex items-center gap-2 w-full text-left px-4 py-2.5 rounded-full text-sm font-medium border border-[#0B5E86] text-[#0B5E86] hover:bg-[#0B5E86] hover:text-white transition-all"
+            >
+              <Lock className="h-3.5 w-3.5" />
+              Admin Login
+            </button>
           </motion.div>
         )}
       </header>
@@ -1257,8 +1283,9 @@ export function PublicWebsite() {
                 window.location.hash = "admin";
               }}
               data-ocid="footer.admin_login.link"
-              className="text-white/20 hover:text-white/50 transition-colors text-[10px] bg-transparent border-none cursor-pointer p-0"
+              className="text-white/60 hover:text-white transition-colors text-xs bg-transparent border-none cursor-pointer p-0 flex items-center gap-1"
             >
+              <Lock className="h-3 w-3" />
               Admin Login
             </button>
           </div>
