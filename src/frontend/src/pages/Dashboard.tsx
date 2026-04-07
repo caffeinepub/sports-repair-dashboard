@@ -2,6 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertCircle,
   Briefcase,
+  CalendarCheck,
   CheckCircle2,
   Clock,
   TrendingUp,
@@ -9,7 +10,11 @@ import {
 import { KpiCard } from "../components/KpiCard";
 import { StatusBadge } from "../components/StatusBadge";
 import type { JobWithId } from "../hooks/useQueries";
-import { useGetAllJobs, useGetSummaryStats } from "../hooks/useQueries";
+import {
+  useGetAllJobs,
+  useGetBookingsSummary,
+  useGetSummaryStats,
+} from "../hooks/useQueries";
 
 interface Props {
   onNavigateJobs: () => void;
@@ -21,6 +26,8 @@ const SKELETON_IDS = ["a", "b", "c", "d", "e"];
 export function Dashboard({ onNavigateJobs, onViewJob }: Props) {
   const { data: stats, isLoading: statsLoading } = useGetSummaryStats();
   const { data: jobs, isLoading: jobsLoading } = useGetAllJobs();
+  const { data: bookingsSummary, isLoading: bookingsSummaryLoading } =
+    useGetBookingsSummary();
 
   const recentJobs = jobs?.slice(0, 6) ?? [];
 
@@ -38,7 +45,7 @@ export function Dashboard({ onNavigateJobs, onViewJob }: Props) {
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         data-ocid="dashboard.section"
       >
-        {statsLoading ? (
+        {statsLoading || bookingsSummaryLoading ? (
           SKELETON_IDS.map((id) => (
             <Skeleton key={id} className="h-24 rounded-xl" />
           ))
@@ -68,7 +75,14 @@ export function Dashboard({ onNavigateJobs, onViewJob }: Props) {
               icon={<CheckCircle2 className="h-5 w-5" />}
               tint="green"
             />
-            <div className="col-span-2 lg:col-span-4">
+            <KpiCard
+              label="New Bookings"
+              value={Number(bookingsSummary?.pending ?? 0)}
+              icon={<CalendarCheck className="h-5 w-5" />}
+              tint="amber"
+              sub="Pending online bookings"
+            />
+            <div className="col-span-1 lg:col-span-3">
               <KpiCard
                 label="Total Revenue"
                 value={`\u20b9 ${(stats?.totalRevenue ?? 0).toLocaleString()}`}

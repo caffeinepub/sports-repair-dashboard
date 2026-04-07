@@ -89,7 +89,9 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface JobRecord {
+export interface JobWithId {
+    id: bigint;
+    jobCategory: string;
     noOfRackets: bigint;
     dateOfJob: string;
     advancedAmount: number;
@@ -106,10 +108,60 @@ export interface JobRecord {
     place: string;
     typeOfWork: string;
 }
+export interface BookingWithId {
+    id: bigint;
+    customerName: string;
+    serviceType: string;
+    createdAt: bigint;
+    customerMobile: string;
+    equipmentDetails: string;
+    bookingStatus: string;
+    preferredDate: string;
+    notes: string;
+}
+export interface JobRecord {
+    jobCategory: string;
+    noOfRackets: bigint;
+    dateOfJob: string;
+    advancedAmount: number;
+    serviceCharges: number;
+    jobDescription: string;
+    createdAt: bigint;
+    jobStatus: string;
+    customerMobile: string;
+    personName: string;
+    totalAmount: number;
+    modelName: string;
+    shopName: string;
+    paymentMode: string;
+    place: string;
+    typeOfWork: string;
+}
+export interface BookingRecord {
+    customerName: string;
+    serviceType: string;
+    createdAt: bigint;
+    customerMobile: string;
+    equipmentDetails: string;
+    bookingStatus: string;
+    preferredDate: string;
+    notes: string;
+}
 export interface backendInterface {
+    createBooking(input: BookingRecord): Promise<bigint>;
     createJob(input: JobRecord): Promise<bigint>;
     deleteJob(id: bigint): Promise<void>;
-    getAllJobs(): Promise<Array<JobRecord>>;
+    getAllBookings(): Promise<Array<BookingWithId>>;
+    getAllJobs(): Promise<Array<JobWithId>>;
+    getBookingsByMobile(mobile: string): Promise<Array<BookingWithId>>;
+    getBookingsSummary(): Promise<{
+        total: bigint;
+        cancelled: bigint;
+        pending: bigint;
+        completed: bigint;
+        confirmed: bigint;
+        inProgress: bigint;
+    }>;
     getJobById(id: bigint): Promise<JobRecord>;
     getSummaryStats(): Promise<{
         pendingCount: bigint;
@@ -118,10 +170,25 @@ export interface backendInterface {
         completedCount: bigint;
         totalRevenue: number;
     }>;
+    updateBookingStatus(id: bigint, status: string): Promise<void>;
     updateJob(id: bigint, updatedJob: JobRecord): Promise<void>;
 }
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async createBooking(arg0: BookingRecord): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createBooking(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createBooking(arg0);
+            return result;
+        }
+    }
     async createJob(arg0: JobRecord): Promise<bigint> {
         if (this.processError) {
             try {
@@ -150,7 +217,21 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getAllJobs(): Promise<Array<JobRecord>> {
+    async getAllBookings(): Promise<Array<BookingWithId>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllBookings();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllBookings();
+            return result;
+        }
+    }
+    async getAllJobs(): Promise<Array<JobWithId>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getAllJobs();
@@ -161,6 +242,41 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getAllJobs();
+            return result;
+        }
+    }
+    async getBookingsByMobile(arg0: string): Promise<Array<BookingWithId>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getBookingsByMobile(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getBookingsByMobile(arg0);
+            return result;
+        }
+    }
+    async getBookingsSummary(): Promise<{
+        total: bigint;
+        cancelled: bigint;
+        pending: bigint;
+        completed: bigint;
+        confirmed: bigint;
+        inProgress: bigint;
+    }> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getBookingsSummary();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getBookingsSummary();
             return result;
         }
     }
@@ -195,6 +311,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getSummaryStats();
+            return result;
+        }
+    }
+    async updateBookingStatus(arg0: bigint, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateBookingStatus(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateBookingStatus(arg0, arg1);
             return result;
         }
     }

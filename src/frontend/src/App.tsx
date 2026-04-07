@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import {
   BarChart2,
+  CalendarCheck,
   ClipboardList,
   LayoutDashboard,
   LogOut,
@@ -18,6 +19,7 @@ import { ServiceBill } from "./components/ServiceBill";
 import { ShopJobForm } from "./components/ShopJobForm";
 import type { JobWithId } from "./hooks/useQueries";
 import { seedIfNeeded } from "./lib/seed";
+import { BookingsPage } from "./pages/BookingsPage";
 import { Dashboard } from "./pages/Dashboard";
 import { JobsList } from "./pages/JobsList";
 import { LoginPage } from "./pages/LoginPage";
@@ -25,12 +27,13 @@ import { PublicWebsite } from "./pages/PublicWebsite";
 import { Reports } from "./pages/Reports";
 import { ShopJobsList } from "./pages/ShopJobsList";
 
-type Page = "dashboard" | "jobs" | "reports" | "shopjobs";
+type Page = "dashboard" | "jobs" | "reports" | "shopjobs" | "bookings";
 
 const navItems = [
   { id: "dashboard" as Page, label: "Dashboard", icon: LayoutDashboard },
   { id: "jobs" as Page, label: "All Jobs", icon: ClipboardList },
   { id: "shopjobs" as Page, label: "Shop Jobs", icon: Store },
+  { id: "bookings" as Page, label: "Bookings", icon: CalendarCheck },
   { id: "reports" as Page, label: "Reports", icon: BarChart2 },
 ];
 
@@ -38,6 +41,7 @@ function pageTitle(page: Page): string {
   if (page === "dashboard") return "Dashboard Overview";
   if (page === "reports") return "Reports & Analytics";
   if (page === "shopjobs") return "Sports Shop Jobs";
+  if (page === "bookings") return "Customer Bookings";
   return "Job Sheet Management";
 }
 
@@ -177,7 +181,7 @@ function AdminApp() {
           </div>
           <div>
             <p className="text-white font-bold text-sm leading-tight">
-              Sports Repair
+              CFR Sports Repairs
             </p>
             <p className="text-white/60 text-xs">Admin Dashboard</p>
           </div>
@@ -240,7 +244,7 @@ function AdminApp() {
 
         {/* Footer */}
         <div className="px-5 py-4 border-t border-white/10">
-          <p className="text-white/40 text-xs">Sports Repair Dashboard</p>
+          <p className="text-white/40 text-xs">CFR Sports Repairs</p>
         </div>
       </aside>
 
@@ -302,12 +306,13 @@ function AdminApp() {
               onPrintSheet={openBill}
             />
           )}
+          {page === "bookings" && <BookingsPage />}
           {page === "reports" && <Reports />}
         </main>
 
         {/* Footer */}
         <footer className="border-t bg-card px-6 py-3 text-xs text-muted-foreground flex justify-center shrink-0 no-print">
-          © {new Date().getFullYear()}. Built with love using{" "}
+          © {new Date().getFullYear()} CFR Sports Repairs. Built with love using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
             className="text-primary ml-1 hover:underline"

@@ -8,7 +8,18 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const BookingRecord = IDL.Record({
+  'customerName' : IDL.Text,
+  'serviceType' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'customerMobile' : IDL.Text,
+  'equipmentDetails' : IDL.Text,
+  'bookingStatus' : IDL.Text,
+  'preferredDate' : IDL.Text,
+  'notes' : IDL.Text,
+});
 export const JobRecord = IDL.Record({
+  'jobCategory' : IDL.Text,
   'noOfRackets' : IDL.Nat,
   'dateOfJob' : IDL.Text,
   'advancedAmount' : IDL.Float64,
@@ -24,11 +35,21 @@ export const JobRecord = IDL.Record({
   'paymentMode' : IDL.Text,
   'place' : IDL.Text,
   'typeOfWork' : IDL.Text,
-  'jobCategory' : IDL.Text,
 });
-
+export const BookingWithId = IDL.Record({
+  'id' : IDL.Nat,
+  'customerName' : IDL.Text,
+  'serviceType' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'customerMobile' : IDL.Text,
+  'equipmentDetails' : IDL.Text,
+  'bookingStatus' : IDL.Text,
+  'preferredDate' : IDL.Text,
+  'notes' : IDL.Text,
+});
 export const JobWithId = IDL.Record({
   'id' : IDL.Nat,
+  'jobCategory' : IDL.Text,
   'noOfRackets' : IDL.Nat,
   'dateOfJob' : IDL.Text,
   'advancedAmount' : IDL.Float64,
@@ -44,13 +65,33 @@ export const JobWithId = IDL.Record({
   'paymentMode' : IDL.Text,
   'place' : IDL.Text,
   'typeOfWork' : IDL.Text,
-  'jobCategory' : IDL.Text,
 });
 
 export const idlService = IDL.Service({
+  'createBooking' : IDL.Func([BookingRecord], [IDL.Nat], []),
   'createJob' : IDL.Func([JobRecord], [IDL.Nat], []),
   'deleteJob' : IDL.Func([IDL.Nat], [], []),
+  'getAllBookings' : IDL.Func([], [IDL.Vec(BookingWithId)], ['query']),
   'getAllJobs' : IDL.Func([], [IDL.Vec(JobWithId)], ['query']),
+  'getBookingsByMobile' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(BookingWithId)],
+      ['query'],
+    ),
+  'getBookingsSummary' : IDL.Func(
+      [],
+      [
+        IDL.Record({
+          'total' : IDL.Nat,
+          'cancelled' : IDL.Nat,
+          'pending' : IDL.Nat,
+          'completed' : IDL.Nat,
+          'confirmed' : IDL.Nat,
+          'inProgress' : IDL.Nat,
+        }),
+      ],
+      ['query'],
+    ),
   'getJobById' : IDL.Func([IDL.Nat], [JobRecord], ['query']),
   'getSummaryStats' : IDL.Func(
       [],
@@ -65,13 +106,25 @@ export const idlService = IDL.Service({
       ],
       ['query'],
     ),
+  'updateBookingStatus' : IDL.Func([IDL.Nat, IDL.Text], [], []),
   'updateJob' : IDL.Func([IDL.Nat, JobRecord], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const BookingRecord = IDL.Record({
+    'customerName' : IDL.Text,
+    'serviceType' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'customerMobile' : IDL.Text,
+    'equipmentDetails' : IDL.Text,
+    'bookingStatus' : IDL.Text,
+    'preferredDate' : IDL.Text,
+    'notes' : IDL.Text,
+  });
   const JobRecord = IDL.Record({
+    'jobCategory' : IDL.Text,
     'noOfRackets' : IDL.Nat,
     'dateOfJob' : IDL.Text,
     'advancedAmount' : IDL.Float64,
@@ -87,11 +140,21 @@ export const idlFactory = ({ IDL }) => {
     'paymentMode' : IDL.Text,
     'place' : IDL.Text,
     'typeOfWork' : IDL.Text,
-    'jobCategory' : IDL.Text,
   });
-
+  const BookingWithId = IDL.Record({
+    'id' : IDL.Nat,
+    'customerName' : IDL.Text,
+    'serviceType' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'customerMobile' : IDL.Text,
+    'equipmentDetails' : IDL.Text,
+    'bookingStatus' : IDL.Text,
+    'preferredDate' : IDL.Text,
+    'notes' : IDL.Text,
+  });
   const JobWithId = IDL.Record({
     'id' : IDL.Nat,
+    'jobCategory' : IDL.Text,
     'noOfRackets' : IDL.Nat,
     'dateOfJob' : IDL.Text,
     'advancedAmount' : IDL.Float64,
@@ -107,13 +170,33 @@ export const idlFactory = ({ IDL }) => {
     'paymentMode' : IDL.Text,
     'place' : IDL.Text,
     'typeOfWork' : IDL.Text,
-    'jobCategory' : IDL.Text,
   });
   
   return IDL.Service({
+    'createBooking' : IDL.Func([BookingRecord], [IDL.Nat], []),
     'createJob' : IDL.Func([JobRecord], [IDL.Nat], []),
     'deleteJob' : IDL.Func([IDL.Nat], [], []),
+    'getAllBookings' : IDL.Func([], [IDL.Vec(BookingWithId)], ['query']),
     'getAllJobs' : IDL.Func([], [IDL.Vec(JobWithId)], ['query']),
+    'getBookingsByMobile' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(BookingWithId)],
+        ['query'],
+      ),
+    'getBookingsSummary' : IDL.Func(
+        [],
+        [
+          IDL.Record({
+            'total' : IDL.Nat,
+            'cancelled' : IDL.Nat,
+            'pending' : IDL.Nat,
+            'completed' : IDL.Nat,
+            'confirmed' : IDL.Nat,
+            'inProgress' : IDL.Nat,
+          }),
+        ],
+        ['query'],
+      ),
     'getJobById' : IDL.Func([IDL.Nat], [JobRecord], ['query']),
     'getSummaryStats' : IDL.Func(
         [],
@@ -128,6 +211,7 @@ export const idlFactory = ({ IDL }) => {
         ],
         ['query'],
       ),
+    'updateBookingStatus' : IDL.Func([IDL.Nat, IDL.Text], [], []),
     'updateJob' : IDL.Func([IDL.Nat, JobRecord], [], []),
   });
 };

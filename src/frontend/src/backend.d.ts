@@ -7,7 +7,9 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface JobRecord {
+export interface JobWithId {
+    id: bigint;
+    jobCategory: string;
     noOfRackets: bigint;
     dateOfJob: string;
     advancedAmount: number;
@@ -23,15 +25,61 @@ export interface JobRecord {
     paymentMode: string;
     place: string;
     typeOfWork: string;
-    jobCategory: string;
 }
-export interface JobWithIdRecord extends JobRecord {
+export interface BookingWithId {
     id: bigint;
+    customerName: string;
+    serviceType: string;
+    createdAt: bigint;
+    customerMobile: string;
+    equipmentDetails: string;
+    bookingStatus: string;
+    preferredDate: string;
+    notes: string;
+}
+export interface JobRecord {
+    jobCategory: string;
+    noOfRackets: bigint;
+    dateOfJob: string;
+    advancedAmount: number;
+    serviceCharges: number;
+    jobDescription: string;
+    createdAt: bigint;
+    jobStatus: string;
+    customerMobile: string;
+    personName: string;
+    totalAmount: number;
+    modelName: string;
+    shopName: string;
+    paymentMode: string;
+    place: string;
+    typeOfWork: string;
+}
+export interface BookingRecord {
+    customerName: string;
+    serviceType: string;
+    createdAt: bigint;
+    customerMobile: string;
+    equipmentDetails: string;
+    bookingStatus: string;
+    preferredDate: string;
+    notes: string;
 }
 export interface backendInterface {
+    createBooking(input: BookingRecord): Promise<bigint>;
     createJob(input: JobRecord): Promise<bigint>;
     deleteJob(id: bigint): Promise<void>;
-    getAllJobs(): Promise<Array<JobWithIdRecord>>;
+    getAllBookings(): Promise<Array<BookingWithId>>;
+    getAllJobs(): Promise<Array<JobWithId>>;
+    getBookingsByMobile(mobile: string): Promise<Array<BookingWithId>>;
+    getBookingsSummary(): Promise<{
+        total: bigint;
+        cancelled: bigint;
+        pending: bigint;
+        completed: bigint;
+        confirmed: bigint;
+        inProgress: bigint;
+    }>;
     getJobById(id: bigint): Promise<JobRecord>;
     getSummaryStats(): Promise<{
         pendingCount: bigint;
@@ -40,5 +88,6 @@ export interface backendInterface {
         completedCount: bigint;
         totalRevenue: number;
     }>;
+    updateBookingStatus(id: bigint, status: string): Promise<void>;
     updateJob(id: bigint, updatedJob: JobRecord): Promise<void>;
 }

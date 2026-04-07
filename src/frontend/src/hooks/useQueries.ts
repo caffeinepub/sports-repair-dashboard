@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { JobRecord } from "../backend.d";
+import type { BookingRecord, JobRecord } from "../backend.d";
 import { useActor } from "./useActor";
 
 export type JobWithId = JobRecord & { _id: bigint | null };
@@ -101,5 +101,62 @@ export function useDeleteJob() {
       toast.success("Job deleted.");
     },
     onError: () => toast.error("Failed to delete job."),
+  });
+}
+
+export function useGetAllBookings() {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["bookings"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllBookings();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetBookingsSummary() {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["bookingsSummary"],
+    queryFn: async () => {
+      if (!actor) return null;
+      return actor.getBookingsSummary();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateBooking() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: BookingRecord) => {
+      if (!actor) throw new Error("No actor");
+      return actor.createBooking(input);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["bookings"] });
+      qc.invalidateQueries({ queryKey: ["bookingsSummary"] });
+    },
+    onError: () => toast.error("Failed to submit booking."),
+  });
+}
+
+export function useUpdateBookingStatus() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: bigint; status: string }) => {
+      if (!actor) throw new Error("No actor");
+      return actor.updateBookingStatus(id, status);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["bookings"] });
+      qc.invalidateQueries({ queryKey: ["bookingsSummary"] });
+      toast.success("Booking status updated!");
+    },
+    onError: () => toast.error("Failed to update booking status."),
   });
 }

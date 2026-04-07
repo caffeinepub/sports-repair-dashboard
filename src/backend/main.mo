@@ -1,11 +1,15 @@
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
+import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
 import Int "mo:core/Int";
 import Float "mo:core/Float";
+import Iter "mo:core/Iter";
+
+
 
 actor {
-  // V1 record type (no jobCategory) — kept for upgrade compatibility
+  // V1 job record type (no category)
   type JobRecordV1 = {
     shopName : Text;
     personName : Text;
@@ -24,7 +28,7 @@ actor {
     createdAt : Int;
   };
 
-  // V2 record type — adds jobCategory
+  // V2 job record type — adds jobCategory
   type JobRecord = {
     shopName : Text;
     personName : Text;
@@ -65,31 +69,71 @@ actor {
     jobCategory : Text;
   };
 
-  // V1 stable map — must be kept to avoid compatibility error on upgrade.
-  // Contents are migrated to stableJobsV2 in postupgrade and this map
-  // remains empty thereafter.
+  // Booking record type
+  type BookingRecord = {
+    customerName : Text;
+    customerMobile : Text;
+    serviceType : Text;
+    equipmentDetails : Text;
+    preferredDate : Text;
+    notes : Text;
+    bookingStatus : Text;
+    createdAt : Int;
+  };
+
+  type BookingWithId = {
+    id : Nat;
+    customerName : Text;
+    customerMobile : Text;
+    serviceType : Text;
+    equipmentDetails : Text;
+    preferredDate : Text;
+    notes : Text;
+    bookingStatus : Text;
+    createdAt : Int;
+  };
+
+  // V1 stable map for job records (for upgrade compatibility only)
   let jobRecords = Map.empty<Nat, JobRecordV1>();
 
-  // Stable storage — survives all upgrades
+  // Current job stable storage
   stable var stableJobsV2 : [(Nat, JobRecord)] = [];
   stable var stableNextJobId : Nat = 1;
 
-  // Working in-memory map — rebuilt from stable storage on each upgrade
+  // Current booking stable storage
+  stable var stableBookings : [(Nat, BookingRecord)] = [];
+  stable var stableNextBookingId : Nat = 1;
+
+  // In-memory maps (persisted in stable storage)
   let jobRecordsV2 = Map.empty<Nat, JobRecord>();
   var nextJobId : Nat = 1;
 
-  // Restore working map from stable storage at startup/upgrade
+  let bookingRecords = Map.empty<Nat, BookingRecord>();
+  var nextBookingId : Nat = 1;
+
+  system func preupgrade() {
+    stableJobsV2 := jobRecordsV2.entries().toArray();
+    stableNextJobId := nextJobId;
+    stableBookings := bookingRecords.entries().toArray();
+    stableNextBookingId := nextBookingId;
+  };
+
   system func postupgrade() {
-    // 1. Restore V2 records from stable array
+    // Restore jobs from stable storage
     for ((id, job) in stableJobsV2.vals()) {
       jobRecordsV2.add(id, job);
     };
     stableJobsV2 := [];
 
-    // 2. Migrate any remaining V1 records
+    // Restore bookings from stable storage
+    for ((id, booking) in stableBookings.vals()) {
+      bookingRecords.add(id, booking);
+    };
+    stableBookings := [];
+
+    // Migrate any old V1 records that were left in storage (should be rare)
     for ((id, old) in jobRecords.entries().toArray().vals()) {
       if (not jobRecordsV2.containsKey(id)) {
-        let category = if (old.shopName != "") { "shop" } else { "customer" };
         jobRecordsV2.add(id, {
           shopName = old.shopName;
           personName = old.personName;
@@ -106,21 +150,18 @@ actor {
           jobStatus = old.jobStatus;
           dateOfJob = old.dateOfJob;
           createdAt = old.createdAt;
-          jobCategory = category;
+          jobCategory = if (old.shopName != "") { "shop" } else { "customer" };
         });
-        if (id >= nextJobId) { nextJobId := id + 1 };
       };
     };
 
     nextJobId := stableNextJobId;
+    nextBookingId := stableNextBookingId;
     if (nextJobId < 1) { nextJobId := 1 };
+    if (nextBookingId < 1) { nextBookingId := 1 };
   };
 
-  // Save working map to stable storage before upgrade
-  system func preupgrade() {
-    stableJobsV2 := jobRecordsV2.entries().toArray();
-    stableNextJobId := nextJobId;
-  };
+  // JOB METHODS
 
   public shared func createJob(input : JobRecord) : async Nat {
     jobRecordsV2.add(nextJobId, input);
@@ -130,14 +171,14 @@ actor {
   };
 
   public shared func updateJob(id : Nat, updatedJob : JobRecord) : async () {
-    if (not jobRecordsV2.containsKey(id)) {
-      Runtime.trap("Job with given id does not exist.");
+    switch (jobRecordsV2.get(id)) {
+      case (null) { Runtime.trap("Job with given id does not exist.") };
+      case (?existingJob) { jobRecordsV2.add(id, updatedJob) };
     };
-    jobRecordsV2.add(id, updatedJob);
   };
 
   public shared func deleteJob(id : Nat) : async () {
-    if (not jobRecordsV2.containsKey(id)) {
+    if (jobRecordsV2.get(id) == null) {
       Runtime.trap("Job with given id does not exist.");
     };
     jobRecordsV2.remove(id);
@@ -150,8 +191,6 @@ actor {
     };
   };
 
-  // Returns all jobs with their IDs embedded so the frontend never needs
-  // a local ID cache and data shows correctly on any device/browser.
   public query func getAllJobs() : async [JobWithId] {
     jobRecordsV2.entries().toArray().map(func((id, job) : (Nat, JobRecord)) : JobWithId {
       {
@@ -192,6 +231,83 @@ actor {
       totalRevenue = jobsArr
         .map(func(j) : Float { if (j.jobStatus == "Completed") { j.totalAmount } else { 0.0 } })
         .foldLeft(0.0, func(acc : Float, v : Float) : Float { acc + v });
+    };
+  };
+
+  // BOOKING METHODS
+
+  public shared func createBooking(input : BookingRecord) : async Nat {
+    bookingRecords.add(nextBookingId, input);
+    let bookingId = nextBookingId;
+    nextBookingId += 1;
+    bookingId;
+  };
+
+  public query func getAllBookings() : async [BookingWithId] {
+    bookingRecords.entries().toArray().map(func((id, booking) : (Nat, BookingRecord)) : BookingWithId {
+      {
+        id = id;
+        customerName = booking.customerName;
+        customerMobile = booking.customerMobile;
+        serviceType = booking.serviceType;
+        equipmentDetails = booking.equipmentDetails;
+        preferredDate = booking.preferredDate;
+        notes = booking.notes;
+        bookingStatus = booking.bookingStatus;
+        createdAt = booking.createdAt;
+      }
+    });
+  };
+
+  public query func getBookingsByMobile(mobile : Text) : async [BookingWithId] {
+    bookingRecords.entries().toArray().filter(
+      func((id, booking) : (Nat, BookingRecord)) : Bool {
+        Text.equal(booking.customerMobile, mobile);
+      }
+    ).map(func((id, booking) : (Nat, BookingRecord)) : BookingWithId {
+      {
+        id = id;
+        customerName = booking.customerName;
+        customerMobile = booking.customerMobile;
+        serviceType = booking.serviceType;
+        equipmentDetails = booking.equipmentDetails;
+        preferredDate = booking.preferredDate;
+        notes = booking.notes;
+        bookingStatus = booking.bookingStatus;
+        createdAt = booking.createdAt;
+      }
+    });
+  };
+
+  public shared func updateBookingStatus(id : Nat, status : Text) : async () {
+    switch (bookingRecords.get(id)) {
+      case (null) { Runtime.trap("Booking with given id does not exist.") };
+      case (?booking) {
+        let updatedBooking = {
+          booking with
+          bookingStatus = status
+        };
+        bookingRecords.add(id, updatedBooking);
+      };
+    };
+  };
+
+  public query func getBookingsSummary() : async {
+    total : Nat;
+    pending : Nat;
+    confirmed : Nat;
+    inProgress : Nat;
+    completed : Nat;
+    cancelled : Nat;
+  } {
+    let allBookings = bookingRecords.values().toArray();
+    {
+      total = allBookings.size();
+      pending = allBookings.filter(func(b) { b.bookingStatus == "pending" }).size();
+      confirmed = allBookings.filter(func(b) { b.bookingStatus == "confirmed" }).size();
+      inProgress = allBookings.filter(func(b) { b.bookingStatus == "in-progress" }).size();
+      completed = allBookings.filter(func(b) { b.bookingStatus == "completed" }).size();
+      cancelled = allBookings.filter(func(b) { b.bookingStatus == "cancelled" }).size();
     };
   };
 };

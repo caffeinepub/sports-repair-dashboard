@@ -10,7 +10,29 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface BookingRecord {
+  'customerName' : string,
+  'serviceType' : string,
+  'createdAt' : bigint,
+  'customerMobile' : string,
+  'equipmentDetails' : string,
+  'bookingStatus' : string,
+  'preferredDate' : string,
+  'notes' : string,
+}
+export interface BookingWithId {
+  'id' : bigint,
+  'customerName' : string,
+  'serviceType' : string,
+  'createdAt' : bigint,
+  'customerMobile' : string,
+  'equipmentDetails' : string,
+  'bookingStatus' : string,
+  'preferredDate' : string,
+  'notes' : string,
+}
 export interface JobRecord {
+  'jobCategory' : string,
   'noOfRackets' : bigint,
   'dateOfJob' : string,
   'advancedAmount' : number,
@@ -26,15 +48,44 @@ export interface JobRecord {
   'paymentMode' : string,
   'place' : string,
   'typeOfWork' : string,
-  'jobCategory' : string,
 }
-export interface JobWithId extends JobRecord {
+export interface JobWithId {
   'id' : bigint,
+  'jobCategory' : string,
+  'noOfRackets' : bigint,
+  'dateOfJob' : string,
+  'advancedAmount' : number,
+  'serviceCharges' : number,
+  'jobDescription' : string,
+  'createdAt' : bigint,
+  'jobStatus' : string,
+  'customerMobile' : string,
+  'personName' : string,
+  'totalAmount' : number,
+  'modelName' : string,
+  'shopName' : string,
+  'paymentMode' : string,
+  'place' : string,
+  'typeOfWork' : string,
 }
 export interface _SERVICE {
+  'createBooking' : ActorMethod<[BookingRecord], bigint>,
   'createJob' : ActorMethod<[JobRecord], bigint>,
   'deleteJob' : ActorMethod<[bigint], undefined>,
+  'getAllBookings' : ActorMethod<[], Array<BookingWithId>>,
   'getAllJobs' : ActorMethod<[], Array<JobWithId>>,
+  'getBookingsByMobile' : ActorMethod<[string], Array<BookingWithId>>,
+  'getBookingsSummary' : ActorMethod<
+    [],
+    {
+      'total' : bigint,
+      'cancelled' : bigint,
+      'pending' : bigint,
+      'completed' : bigint,
+      'confirmed' : bigint,
+      'inProgress' : bigint,
+    }
+  >,
   'getJobById' : ActorMethod<[bigint], JobRecord>,
   'getSummaryStats' : ActorMethod<
     [],
@@ -46,6 +97,7 @@ export interface _SERVICE {
       'totalRevenue' : number,
     }
   >,
+  'updateBookingStatus' : ActorMethod<[bigint, string], undefined>,
   'updateJob' : ActorMethod<[bigint, JobRecord], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

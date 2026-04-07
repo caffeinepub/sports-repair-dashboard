@@ -1,11 +1,13 @@
 import {
   Activity,
+  CalendarCheck,
   CheckCircle,
   Clock,
-  Link,
+  Loader2,
   Menu,
   MessageCircle,
   Phone,
+  Search,
   Shield,
   Star,
   Users,
@@ -15,6 +17,8 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
+import type { BookingRecord, BookingWithId } from "../backend.d";
+import { useActor } from "../hooks/useActor";
 
 const WHATSAPP_NUMBER = "919440790818";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
@@ -45,7 +49,7 @@ const services = [
       "Frame cracks, grommet replacement, and full racket restoration for all racket sports.",
   },
   {
-    icon: Link,
+    icon: CalendarCheck,
     title: "Bat Binding",
     description:
       "Professional binding tape application for all types of cricket and tennis bats.",
@@ -81,20 +85,152 @@ const trustItems = [
   },
 ];
 
+const SERVICE_TYPES = [
+  "Badminton Restringing",
+  "Cricket Bat Repair",
+  "Grip Replacement",
+  "Racket Repair",
+  "Bat Binding",
+  "Full Inspection",
+  "Other",
+];
+
 const quickLinks = [
   { label: "Home", href: "#home" },
   { label: "Services", href: "#services" },
   { label: "Why Choose Us", href: "#why-us" },
+  { label: "Book Repair", href: "#booking" },
+  { label: "Check Status", href: "#check-status" },
   { label: "Contact", href: "#contact" },
 ];
 
+function statusBadge(status: string) {
+  const styles: Record<string, string> = {
+    pending: "bg-amber-100 text-amber-700 border border-amber-200",
+    confirmed: "bg-blue-100 text-blue-700 border border-blue-200",
+    "in-progress": "bg-purple-100 text-purple-700 border border-purple-200",
+    completed: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+    cancelled: "bg-red-100 text-red-700 border border-red-200",
+  };
+  const cls =
+    styles[status] ?? "bg-gray-100 text-gray-700 border border-gray-200";
+  return (
+    <span
+      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${cls}`}
+    >
+      {status}
+    </span>
+  );
+}
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "—";
+  try {
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
 export function PublicWebsite() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Booking form state
+  const [bookingName, setBookingName] = useState("");
+  const [bookingMobile, setBookingMobile] = useState("");
+  const [bookingService, setBookingService] = useState("");
+  const [bookingEquipment, setBookingEquipment] = useState("");
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingNotes, setBookingNotes] = useState("");
+  const [bookingSubmitting, setBookingSubmitting] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState<bigint | null>(null);
+  const [bookingError, setBookingError] = useState("");
+
+  // Status check state
+  const [statusMobile, setStatusMobile] = useState("");
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusResults, setStatusResults] = useState<BookingWithId[] | null>(
+    null,
+  );
+  const [statusError, setStatusError] = useState("");
+
+  const { actor } = useActor();
 
   function scrollTo(id: string) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMobileMenuOpen(false);
   }
+
+  async function handleBookingSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!bookingName.trim() || !bookingMobile.trim() || !bookingService) {
+      setBookingError("Please fill in all required fields.");
+      return;
+    }
+    if (!actor) {
+      setBookingError("Service temporarily unavailable. Please try again.");
+      return;
+    }
+    setBookingSubmitting(true);
+    setBookingError("");
+    try {
+      const record: BookingRecord = {
+        customerName: bookingName.trim(),
+        customerMobile: bookingMobile.trim(),
+        serviceType: bookingService,
+        equipmentDetails: bookingEquipment.trim(),
+        preferredDate: bookingDate,
+        notes: bookingNotes.trim(),
+        bookingStatus: "pending",
+        createdAt: BigInt(Date.now()),
+      };
+      const id = await actor.createBooking(record);
+      setBookingSuccess(id);
+      setBookingName("");
+      setBookingMobile("");
+      setBookingService("");
+      setBookingEquipment("");
+      setBookingDate("");
+      setBookingNotes("");
+    } catch {
+      setBookingError("Failed to submit booking. Please try WhatsApp instead.");
+    } finally {
+      setBookingSubmitting(false);
+    }
+  }
+
+  async function handleStatusCheck(e: React.FormEvent) {
+    e.preventDefault();
+    if (!statusMobile.trim()) return;
+    if (!actor) {
+      setStatusError("Service temporarily unavailable. Please try again.");
+      return;
+    }
+    setStatusLoading(true);
+    setStatusError("");
+    setStatusResults(null);
+    try {
+      const results = await actor.getBookingsByMobile(statusMobile.trim());
+      setStatusResults(results as BookingWithId[]);
+    } catch {
+      setStatusError("Failed to fetch bookings. Please try again.");
+    } finally {
+      setStatusLoading(false);
+    }
+  }
+
+  const navItems = [
+    { label: "Home", id: "home" },
+    { label: "Services", id: "services" },
+    { label: "Why Us", id: "why-us" },
+    { label: "Book Repair", id: "booking" },
+    { label: "Check Status", id: "check-status" },
+    { label: "Contact", id: "contact" },
+  ];
 
   return (
     <div
@@ -120,7 +256,7 @@ export function PublicWebsite() {
                 className="font-bold text-base leading-tight block"
                 style={{ color: "#0B5E86" }}
               >
-                ACE Sports Repair
+                CFR Sports Repairs
               </span>
               <span className="text-[10px] text-[#6B7280] leading-tight block">
                 Professional Equipment Service
@@ -129,24 +265,16 @@ export function PublicWebsite() {
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6">
-            {["Home", "Services", "Why Us", "Contact"].map((item) => (
+          <nav className="hidden md:flex items-center gap-5">
+            {navItems.map((item) => (
               <button
-                key={item}
+                key={item.id}
                 type="button"
-                onClick={() =>
-                  scrollTo(
-                    item === "Why Us"
-                      ? "why-us"
-                      : item === "Contact"
-                        ? "contact"
-                        : item.toLowerCase(),
-                  )
-                }
-                data-ocid={`nav.${item.toLowerCase().replace(/ /g, "_")}.link`}
+                onClick={() => scrollTo(item.id)}
+                data-ocid={`nav.${item.id.replace(/-/g, "_")}.link`}
                 className="text-sm font-medium text-[#374151] hover:text-[#0B5E86] transition-colors"
               >
-                {item}
+                {item.label}
               </button>
             ))}
           </nav>
@@ -187,22 +315,14 @@ export function PublicWebsite() {
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden border-t border-[#E5E7EB] bg-white px-4 py-4 space-y-3"
           >
-            {["Home", "Services", "Why Us", "Contact"].map((item) => (
+            {navItems.map((item) => (
               <button
-                key={item}
+                key={item.id}
                 type="button"
-                onClick={() =>
-                  scrollTo(
-                    item === "Why Us"
-                      ? "why-us"
-                      : item === "Contact"
-                        ? "contact"
-                        : item.toLowerCase(),
-                  )
-                }
+                onClick={() => scrollTo(item.id)}
                 className="block w-full text-left text-sm font-medium text-[#374151] py-1.5"
               >
-                {item}
+                {item.label}
               </button>
             ))}
             <a
@@ -273,17 +393,16 @@ export function PublicWebsite() {
               restore your gear to peak performance.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={() => scrollTo("booking")}
                 data-ocid="hero.book_repair.button"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:opacity-90 hover:shadow-xl hover:-translate-y-0.5"
                 style={{ background: "#2FAE5E" }}
               >
-                <MessageCircle className="h-4 w-4" />
+                <CalendarCheck className="h-4 w-4" />
                 Book a Repair
-              </a>
+              </button>
               <button
                 type="button"
                 onClick={() => scrollTo("services")}
@@ -431,15 +550,14 @@ export function PublicWebsite() {
                 <p className="text-sm leading-relaxed text-[#6B7280]">
                   {svc.description}
                 </p>
-                <a
-                  href={WHATSAPP_URL}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  type="button"
+                  onClick={() => scrollTo("booking")}
                   className="inline-flex items-center gap-1 text-xs font-semibold mt-4 transition-colors hover:opacity-80"
                   style={{ color: "#2FAE5E" }}
                 >
                   Book This Service →
-                </a>
+                </button>
               </motion.div>
             ))}
           </div>
@@ -537,6 +655,440 @@ export function PublicWebsite() {
         </div>
       </section>
 
+      {/* ═══════════════════════════════ BOOKING FORM ═══════════════════════════════ */}
+      <section id="booking" className="py-20" style={{ background: "#F3F6F9" }}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <p
+              className="text-xs font-bold uppercase tracking-[0.2em] mb-3"
+              style={{ color: "#2FAE5E" }}
+            >
+              Schedule a Repair
+            </p>
+            <h2
+              className="text-3xl sm:text-4xl font-black uppercase"
+              style={{ color: "#0B5E86" }}
+            >
+              Book Your Repair Online
+            </h2>
+            <div
+              className="mx-auto mt-4 h-1 w-16 rounded-full"
+              style={{ background: "linear-gradient(90deg, #0B5E86, #2FAE5E)" }}
+            />
+            <p className="mt-4 text-[#6B7280] text-sm">
+              Fill in the form below and we'll confirm your booking shortly.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="bg-white rounded-2xl shadow-lg border border-[#E5E7EB] p-8"
+            data-ocid="booking.panel"
+          >
+            {bookingSuccess !== null ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-8"
+                data-ocid="booking.success_state"
+              >
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                  style={{ background: "#e8f5ee" }}
+                >
+                  <CheckCircle
+                    className="h-8 w-8"
+                    style={{ color: "#2FAE5E" }}
+                  />
+                </div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#111827" }}
+                >
+                  Booking Submitted!
+                </h3>
+                <p className="text-[#374151] mb-1">
+                  Your booking ID is{" "}
+                  <span className="font-bold" style={{ color: "#0B5E86" }}>
+                    #{String(bookingSuccess).padStart(4, "0")}
+                  </span>
+                </p>
+                <p className="text-sm text-[#6B7280] mb-6">
+                  Use your mobile number below to check status.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBookingSuccess(null);
+                    }}
+                    className="px-6 py-2.5 rounded-full text-sm font-semibold border-2 transition-all hover:bg-[#f3f6f9]"
+                    style={{ borderColor: "#0B5E86", color: "#0B5E86" }}
+                  >
+                    Book Another Repair
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollTo("check-status")}
+                    className="px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90"
+                    style={{ background: "#2FAE5E" }}
+                    data-ocid="booking.check_status.button"
+                  >
+                    Check Booking Status
+                  </button>
+                </div>
+              </motion.div>
+            ) : (
+              <form
+                onSubmit={handleBookingSubmit}
+                className="space-y-5"
+                data-ocid="booking.section"
+              >
+                <div className="grid sm:grid-cols-2 gap-5">
+                  {/* Customer Name */}
+                  <div>
+                    <label
+                      htmlFor="booking-name"
+                      className="block text-sm font-semibold text-[#374151] mb-1.5"
+                    >
+                      Customer Name <span style={{ color: "#E53E3E" }}>*</span>
+                    </label>
+                    <input
+                      id="booking-name"
+                      type="text"
+                      required
+                      value={bookingName}
+                      onChange={(e) => setBookingName(e.target.value)}
+                      placeholder="Your full name"
+                      data-ocid="booking.input"
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#D1D5DB] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#0B5E86]/30 focus:border-[#0B5E86] transition-all"
+                    />
+                  </div>
+                  {/* Mobile */}
+                  <div>
+                    <label
+                      htmlFor="booking-mobile"
+                      className="block text-sm font-semibold text-[#374151] mb-1.5"
+                    >
+                      Mobile Number <span style={{ color: "#E53E3E" }}>*</span>
+                    </label>
+                    <input
+                      id="booking-mobile"
+                      type="tel"
+                      required
+                      value={bookingMobile}
+                      onChange={(e) => setBookingMobile(e.target.value)}
+                      placeholder="10-digit mobile number"
+                      data-ocid="booking.input"
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#D1D5DB] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#0B5E86]/30 focus:border-[#0B5E86] transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Service Type */}
+                <div>
+                  <label
+                    htmlFor="booking-service"
+                    className="block text-sm font-semibold text-[#374151] mb-1.5"
+                  >
+                    Service Type <span style={{ color: "#E53E3E" }}>*</span>
+                  </label>
+                  <select
+                    id="booking-service"
+                    required
+                    value={bookingService}
+                    onChange={(e) => setBookingService(e.target.value)}
+                    data-ocid="booking.select"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#D1D5DB] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#0B5E86]/30 focus:border-[#0B5E86] transition-all bg-white"
+                  >
+                    <option value="">Select a service...</option>
+                    {SERVICE_TYPES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Equipment Details */}
+                <div>
+                  <label
+                    htmlFor="booking-equipment"
+                    className="block text-sm font-semibold text-[#374151] mb-1.5"
+                  >
+                    Equipment Details
+                  </label>
+                  <input
+                    id="booking-equipment"
+                    type="text"
+                    value={bookingEquipment}
+                    onChange={(e) => setBookingEquipment(e.target.value)}
+                    placeholder="e.g. Yonex Arcsaber 7 Pro"
+                    data-ocid="booking.input"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#D1D5DB] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#0B5E86]/30 focus:border-[#0B5E86] transition-all"
+                  />
+                </div>
+
+                {/* Preferred Date */}
+                <div>
+                  <label
+                    htmlFor="booking-date"
+                    className="block text-sm font-semibold text-[#374151] mb-1.5"
+                  >
+                    Preferred Date
+                  </label>
+                  <input
+                    id="booking-date"
+                    type="date"
+                    value={bookingDate}
+                    onChange={(e) => setBookingDate(e.target.value)}
+                    data-ocid="booking.input"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#D1D5DB] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#0B5E86]/30 focus:border-[#0B5E86] transition-all"
+                  />
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label
+                    htmlFor="booking-notes"
+                    className="block text-sm font-semibold text-[#374151] mb-1.5"
+                  >
+                    Notes / Special Instructions
+                  </label>
+                  <textarea
+                    id="booking-notes"
+                    value={bookingNotes}
+                    onChange={(e) => setBookingNotes(e.target.value)}
+                    placeholder="Any special requirements or details..."
+                    rows={3}
+                    data-ocid="booking.textarea"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#D1D5DB] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#0B5E86]/30 focus:border-[#0B5E86] transition-all resize-none"
+                  />
+                </div>
+
+                {bookingError && (
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: "#E53E3E" }}
+                    data-ocid="booking.error_state"
+                  >
+                    {bookingError}
+                  </p>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                  <button
+                    type="submit"
+                    disabled={bookingSubmitting}
+                    data-ocid="booking.submit_button"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white shadow transition-all hover:opacity-90 disabled:opacity-60"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #0B5E86 0%, #0E6F7A 100%)",
+                    }}
+                  >
+                    {bookingSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <CalendarCheck className="h-4 w-4" />
+                        Submit Booking Request
+                      </>
+                    )}
+                  </button>
+                  <a
+                    href={WHATSAPP_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+                    style={{ background: "#2FAE5E" }}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    WhatsApp Instead
+                  </a>
+                </div>
+              </form>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════ CHECK STATUS ═══════════════════════════════ */}
+      <section id="check-status" className="py-20 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <p
+              className="text-xs font-bold uppercase tracking-[0.2em] mb-3"
+              style={{ color: "#2FAE5E" }}
+            >
+              Track Your Repair
+            </p>
+            <h2
+              className="text-3xl sm:text-4xl font-black uppercase"
+              style={{ color: "#0B5E86" }}
+            >
+              Check Your Booking Status
+            </h2>
+            <div
+              className="mx-auto mt-4 h-1 w-16 rounded-full"
+              style={{ background: "linear-gradient(90deg, #0B5E86, #2FAE5E)" }}
+            />
+            <p className="mt-4 text-[#6B7280] text-sm">
+              Enter your mobile number to see your booking status.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+          >
+            <form
+              onSubmit={handleStatusCheck}
+              className="bg-white rounded-2xl shadow-lg border border-[#E5E7EB] p-8 mb-6"
+              data-ocid="check_status.section"
+            >
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="tel"
+                  value={statusMobile}
+                  onChange={(e) => setStatusMobile(e.target.value)}
+                  placeholder="Enter your mobile number"
+                  data-ocid="check_status.search_input"
+                  required
+                  className="flex-1 px-4 py-3 rounded-xl border border-[#D1D5DB] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#0B5E86]/30 focus:border-[#0B5E86] transition-all"
+                />
+                <button
+                  type="submit"
+                  disabled={statusLoading}
+                  data-ocid="check_status.primary_button"
+                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-60 shrink-0"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #0B5E86 0%, #0E6F7A 100%)",
+                  }}
+                >
+                  {statusLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Search className="h-4 w-4" />
+                  )}
+                  Check Status
+                </button>
+              </div>
+            </form>
+
+            {statusError && (
+              <p
+                className="text-sm font-medium text-center mb-4"
+                style={{ color: "#E53E3E" }}
+                data-ocid="check_status.error_state"
+              >
+                {statusError}
+              </p>
+            )}
+
+            {statusResults !== null && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                {statusResults.length === 0 ? (
+                  <div
+                    className="bg-white rounded-2xl shadow-lg border border-[#E5E7EB] p-10 text-center"
+                    data-ocid="check_status.empty_state"
+                  >
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+                      style={{ background: "#F3F6F9" }}
+                    >
+                      <Search className="h-6 w-6 text-[#9CA3AF]" />
+                    </div>
+                    <p className="font-semibold text-[#374151] mb-1">
+                      No bookings found
+                    </p>
+                    <p className="text-sm text-[#6B7280]">
+                      No bookings found for this number. Please check the number
+                      and try again.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {statusResults.map((booking, i) => (
+                      <motion.div
+                        key={String(booking.id)}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.07 }}
+                        data-ocid={`check_status.item.${i + 1}`}
+                        className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-6"
+                      >
+                        <div className="flex items-start justify-between gap-4 flex-wrap">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span
+                                className="font-bold text-base"
+                                style={{ color: "#0B5E86" }}
+                              >
+                                #{String(booking.id).padStart(4, "0")}
+                              </span>
+                              {statusBadge(booking.bookingStatus)}
+                            </div>
+                            <p className="font-semibold text-[#111827]">
+                              {booking.serviceType}
+                            </p>
+                            {booking.equipmentDetails && (
+                              <p className="text-sm text-[#6B7280] mt-0.5">
+                                {booking.equipmentDetails}
+                              </p>
+                            )}
+                          </div>
+                          {booking.preferredDate && (
+                            <div className="text-right shrink-0">
+                              <p className="text-xs text-[#9CA3AF] mb-0.5">
+                                Preferred Date
+                              </p>
+                              <p className="text-sm font-semibold text-[#374151]">
+                                {formatDate(booking.preferredDate)}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        {booking.notes && (
+                          <p className="mt-3 text-xs text-[#6B7280] border-t border-[#E5E7EB] pt-3">
+                            Note: {booking.notes}
+                          </p>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
       {/* ═══════════════════════════════ CTA BAND ═══════════════════════════════ */}
       <section
         id="contact"
@@ -576,7 +1128,7 @@ export function PublicWebsite() {
               <MessageCircle className="h-5 w-5" />
               Send us a WhatsApp
               <span className="opacity-70 text-sm font-normal">
-                +91 XXXXXXXXXX
+                +91 94407 90818
               </span>
             </a>
             {/* Contact pills */}
@@ -586,7 +1138,7 @@ export function PublicWebsite() {
                 style={{ background: "rgba(255,255,255,0.1)" }}
               >
                 <Phone className="h-4 w-4" />
-                +91 XXXXXXXXXX
+                +91 94407 90818
               </div>
               <div
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-sm text-white/80"
@@ -617,7 +1169,7 @@ export function PublicWebsite() {
                   <Wrench className="h-5 w-5 text-white" />
                 </div>
                 <span className="font-bold text-white text-base">
-                  ACE Sports Repair
+                  CFR Sports Repairs
                 </span>
               </div>
               <p className="text-sm text-white/50 leading-relaxed">
@@ -640,7 +1192,9 @@ export function PublicWebsite() {
                         scrollTo(
                           link.href === "#why-us"
                             ? "why-us"
-                            : link.href.replace("#", ""),
+                            : link.href === "#check-status"
+                              ? "check-status"
+                              : link.href.replace("#", ""),
                         )
                       }
                       data-ocid={`footer.${link.label.toLowerCase().replace(/ /g, "_")}.link`}
@@ -661,7 +1215,7 @@ export function PublicWebsite() {
               <ul className="space-y-3">
                 <li className="flex items-center gap-2.5 text-sm text-white/50">
                   <Phone className="h-4 w-4 text-[#2FAE5E] shrink-0" />
-                  +91 XXXXXXXXXX
+                  +91 94407 90818
                 </li>
                 <li className="flex items-center gap-2.5 text-sm text-white/50">
                   <MessageCircle className="h-4 w-4 text-[#2FAE5E] shrink-0" />
@@ -686,7 +1240,7 @@ export function PublicWebsite() {
           {/* Bottom bar */}
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/30">
             <span>
-              © {new Date().getFullYear()} ACE Sports Repair. Built with love
+              © {new Date().getFullYear()} CFR Sports Repairs. Built with love
               using{" "}
               <a
                 href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
