@@ -16,7 +16,7 @@ import {
 import { motion } from "motion/react";
 import { useState } from "react";
 
-const WHATSAPP_NUMBER = "91XXXXXXXXXX";
+const WHATSAPP_NUMBER = "919440790818";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
 const services = [
