@@ -21,6 +21,7 @@ import { seedIfNeeded } from "./lib/seed";
 import { Dashboard } from "./pages/Dashboard";
 import { JobsList } from "./pages/JobsList";
 import { LoginPage } from "./pages/LoginPage";
+import { PublicWebsite } from "./pages/PublicWebsite";
 import { Reports } from "./pages/Reports";
 import { ShopJobsList } from "./pages/ShopJobsList";
 
@@ -41,6 +42,25 @@ function pageTitle(page: Page): string {
 }
 
 export default function App() {
+  // ─── Public / Admin routing via URL hash ───────────────────────────────────
+  const [route, setRoute] = useState(() => window.location.hash);
+
+  useEffect(() => {
+    const handler = () => setRoute(window.location.hash);
+    window.addEventListener("hashchange", handler);
+    return () => window.removeEventListener("hashchange", handler);
+  }, []);
+
+  // Show public website for everyone except when hash is exactly #admin
+  if (route !== "#admin") {
+    return <PublicWebsite />;
+  }
+
+  // ─── Admin dashboard (below this point) ───────────────────────────────────
+  return <AdminApp />;
+}
+
+function AdminApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => localStorage.getItem("srd_auth") === "true",
   );
