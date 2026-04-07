@@ -20,12 +20,19 @@ export function useGetAllJobs() {
       if (!actor) return [];
       const jobs = await actor.getAllJobs();
       const withIds: JobWithId[] = (jobs as unknown[]).map((job) => {
-        const j = job as JobRecord & { id?: bigint };
+        const j = job as Record<string, unknown>;
+        // The Candid decoder returns id as a bigint. We must extract it explicitly
+        // before spreading, as TypeScript types may not expose it.
+        const rawId = j.id;
+        const resolvedId: bigint | null =
+          rawId !== undefined && rawId !== null
+            ? BigInt(rawId as bigint)
+            : null;
         return {
-          ...j,
+          ...(j as unknown as JobRecord),
           jobCategory: inferCategory(j),
-          // Use the ID returned directly by the backend — works on any device/browser
-          _id: j.id != null ? j.id : null,
+          // Store the real backend ID - works on any device/browser
+          _id: resolvedId,
         };
       });
       return withIds.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));

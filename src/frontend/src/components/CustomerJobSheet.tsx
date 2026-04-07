@@ -52,17 +52,28 @@ function buildCustomerShareText(j: JobWithId, jobNo: string): string {
   return lines.join("\n");
 }
 
+/**
+ * Format a job number as a zero-padded 4-digit string.
+ * e.g. 1 → "0001", 42 → "0042", 1234 → "1234", 10000 → "10000"
+ */
+function formatJobNo(id: bigint | null, serialNo?: number): string {
+  // If we have a real backend ID (any bigint including 0), use it zero-padded
+  if (id !== null && id !== undefined) {
+    return String(id).padStart(4, "0");
+  }
+  // Fall back to serial number if available
+  if (serialNo != null) {
+    return String(serialNo).padStart(4, "0");
+  }
+  return "0001";
+}
+
 export function CustomerJobSheet({ job, open, onOpenChange, serialNo }: Props) {
   if (!job) return null;
 
   const balance = job.totalAmount - job.advancedAmount;
-  // Use the backend job ID (_id) as the job number; fallback to serialNo or createdAt
-  const jobNo =
-    job._id != null && job._id !== BigInt(0)
-      ? String(job._id)
-      : serialNo != null
-        ? String(serialNo)
-        : String(job.createdAt);
+  // Build the display job number — uses backend ID when available (any value including 0)
+  const jobNo = formatJobNo(job._id, serialNo);
 
   const today = new Date().toLocaleDateString("en-IN", {
     day: "2-digit",
