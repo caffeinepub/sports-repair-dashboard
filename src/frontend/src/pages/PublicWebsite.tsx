@@ -243,26 +243,13 @@ export function PublicWebsite() {
       <header className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB] shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{
-                background: "linear-gradient(135deg, #0B5E86 0%, #0E6F7A 100%)",
-              }}
-            >
-              <Wrench className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <span
-                className="font-bold text-base leading-tight block"
-                style={{ color: "#0B5E86" }}
-              >
-                CF Sports Repair
-              </span>
-              <span className="text-[10px] text-[#6B7280] leading-tight block">
-                Professional Equipment Service
-              </span>
-            </div>
+          <div className="flex items-center">
+            <img
+              src="/logo.svg"
+              alt="CF Sports Repair"
+              className="h-11 w-auto"
+              style={{ filter: "drop-shadow(0 1px 3px rgba(11,31,51,0.25))" }}
+            />
           </div>
 
           {/* Desktop Nav */}
@@ -1185,15 +1172,11 @@ export function PublicWebsite() {
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2.5 mb-4">
-                <div
-                  className="w-9 h-9 rounded-xl flex items-center justify-center"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #0B5E86 0%, #2FAE5E 100%)",
-                  }}
-                >
-                  <Wrench className="h-5 w-5 text-white" />
-                </div>
+                <img
+                  src="/logo-icon.svg"
+                  alt="CF Sports Repair"
+                  className="w-10 h-10"
+                />
                 <span className="font-bold text-white text-base">
                   CF Sports Repair
                 </span>

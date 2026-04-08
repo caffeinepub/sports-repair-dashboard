@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1565C0"/>
+      <stop offset="50%" stop-color="#0097A7"/>
+      <stop offset="100%" stop-color="#43A047"/>
+    </linearGradient>
+    <linearGradient id="iconRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#42A5F5" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#66BB6A" stop-opacity="0.8"/>
+    </linearGradient>
+    <radialGradient id="iconGlow" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+    <filter id="iconShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0D47A1" flood-opacity="0.6"/>
+    </filter>
+    <clipPath id="iconCircleClip">
+      <circle cx="40" cy="40" r="37"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background circle with vivid gradient -->
+  <circle cx="40" cy="40" r="37" fill="url(#iconGrad)" filter="url(#iconShadow)"/>
+  <!-- Inner glow -->
+  <circle cx="40" cy="40" r="37" fill="url(#iconGlow)"/>
+  <!-- Outer ring - vivid colored -->
+  <circle cx="40" cy="40" r="37" fill="none" stroke="url(#iconRingGrad)" stroke-width="2"/>
+  <!-- Inner ring -->
+  <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+
+  <!-- Racquet inside the circle -->
+  <g transform="translate(40,40) rotate(-25)" clip-path="url(#iconCircleClip)">
+    <!-- Head oval -->
+    <ellipse cx="0" cy="-6" rx="11" ry="15" fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="2"/>
+    <!-- Handle -->
+    <line x1="0" y1="9" x2="0" y2="24" stroke="rgba(255,255,255,0.95)" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Grip wraps -->
+    <line x1="-3" y1="13" x2="3" y2="16" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="-3" y1="18" x2="3" y2="21" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linecap="round"/>
+    <!-- String grid — horizontal -->
+    <line x1="-10.5" y1="-6" x2="10.5" y2="-6" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+    <line x1="-11" y1="-1" x2="11" y2="-1" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+    <line x1="-11" y1="4" x2="11" y2="4" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+    <line x1="-10" y1="-11" x2="10" y2="-11" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+    <line x1="-8" y1="-16" x2="8" y2="-16" stroke="rgba(255,255,255,0.45)" stroke-width="0.8"/>
+    <!-- String grid — vertical -->
+    <line x1="0" y1="-21" x2="0" y2="9" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+    <line x1="-5" y1="-21" x2="-5" y2="9" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+    <line x1="5" y1="-21" x2="5" y2="9" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+    <line x1="-9" y1="-18" x2="-9" y2="7" stroke="rgba(255,255,255,0.45)" stroke-width="0.8"/>
+    <line x1="9" y1="-18" x2="9" y2="7" stroke="rgba(255,255,255,0.45)" stroke-width="0.8"/>
+    <!-- Bridge -->
+    <path d="M-4,9 Q0,12.5 4,9" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.75"/>
+  </g>
+
+  <!-- "CF" text at top-left area of circle -->
+  <text
+    x="7"
+    y="22"
+    font-family="'Arial Black', 'Impact', 'Helvetica Neue', sans-serif"
+    font-size="14"
+    font-weight="900"
+    font-style="italic"
+    fill="rgba(255,255,255,0.95)"
+    letter-spacing="-0.5"
+  >CF</text>
+
+  <!-- Bottom accent arc - brighter -->
+  <path d="M 12 65 Q 40 73 68 65" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+
+</svg>

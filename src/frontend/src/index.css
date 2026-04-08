@@ -104,5 +104,11 @@
     .print-only {
       display: block !important;
     }
+    /* Ensure background colors and gradients print correctly */
+    #customer-job-sheet-print,
+    #service-bill-print {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
   }
 }

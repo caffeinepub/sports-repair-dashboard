@@ -33,22 +33,22 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       className="min-h-screen flex items-center justify-center p-4"
       style={{
         background:
-          "linear-gradient(135deg, #0d2b6e 0%, #0a4f2e 60%, #0d6e4f 100%)",
+          "linear-gradient(135deg, #0D2F7A 0%, #0B4E8A 35%, #0B6B6B 65%, #1B5E20 100%)",
       }}
     >
       {/* Background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl"
-          style={{ background: "rgba(29,78,216,0.25)" }}
+          style={{ background: "rgba(21,101,192,0.35)" }}
         />
         <div
           className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl"
-          style={{ background: "rgba(22,163,74,0.22)" }}
+          style={{ background: "rgba(67,160,71,0.28)" }}
         />
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-3xl"
-          style={{ background: "rgba(56,189,248,0.12)" }}
+          style={{ background: "rgba(0,151,167,0.18)" }}
         />
       </div>
 
@@ -58,8 +58,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           shaking ? "animate-[shake_0.4s_ease-in-out]" : ""
         }`}
         style={{
-          background: "#0f1e45",
-          border: "1px solid rgba(56,189,248,0.15)",
+          background: "#0D1E45",
+          border: "1px solid rgba(2,136,209,0.25)",
         }}
       >
         {/* Top gradient bar */}
@@ -67,7 +67,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           style={{
             height: "5px",
             background:
-              "linear-gradient(90deg, #1d4ed8 0%, #16a34a 50%, #0ea5e9 100%)",
+              "linear-gradient(90deg, #1565C0 0%, #0097A7 50%, #43A047 100%)",
             width: "100%",
           }}
         />
@@ -77,7 +77,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           <div
             className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
             style={{
-              background: "linear-gradient(135deg, #1d4ed8 0%, #16a34a 100%)",
+              background:
+                "linear-gradient(135deg, #1565C0 0%, #0097A7 50%, #43A047 100%)",
             }}
           >
             <svg
@@ -128,10 +129,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               />
             </svg>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: "#e0f2fe" }}>
+          <h1 className="text-xl font-bold" style={{ color: "#E3F2FD" }}>
             CF Sports Repair
           </h1>
-          <p className="text-sm" style={{ color: "#7dd3fc" }}>
+          <p className="text-sm" style={{ color: "#4FC3F7" }}>
             Admin Dashboard
           </p>
         </CardHeader>
@@ -141,7 +142,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <div className="space-y-1.5">
               <Label
                 htmlFor="password"
-                style={{ color: "#bae6fd", fontWeight: 600 }}
+                style={{ color: "#B3E5FC", fontWeight: 600 }}
               >
                 Password
               </Label>
@@ -166,7 +167,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 <button
                   type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
-                  style={{ color: "#7dd3fc" }}
+                  style={{ color: "#29B6F6" }}
                   onClick={() => setShowPassword((v) => !v)}
                   data-ocid="login.toggle"
                   aria-label={showPassword ? "Hide password" : "Show password"}
@@ -194,7 +195,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               data-ocid="login.submit_button"
               className="w-full font-bold text-white shadow-md hover:opacity-90 transition-opacity"
               style={{
-                background: "linear-gradient(90deg, #1d4ed8 0%, #16a34a 100%)",
+                background:
+                  "linear-gradient(90deg, #1565C0 0%, #0097A7 50%, #43A047 100%)",
                 border: "none",
               }}
             >
@@ -202,9 +204,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             </Button>
           </form>
 
-          <p className="text-center text-xs mt-6" style={{ color: "#475569" }}>
+          <p className="text-center text-xs mt-6" style={{ color: "#546E7A" }}>
             CF Sports Repair{" "}
-            <span style={{ color: "#38bdf8", fontWeight: 700 }}>Admin</span>{" "}
+            <span style={{ color: "#29B6F6", fontWeight: 700 }}>Admin</span>{" "}
             Portal
           </p>
         </CardContent>

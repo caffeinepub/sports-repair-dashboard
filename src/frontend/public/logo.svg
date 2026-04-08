@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 110" fill="none">
+  <defs>
+    <!-- Main gradient: vivid blue → vivid teal → vivid green -->
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1565C0"/>
+      <stop offset="50%" stop-color="#0097A7"/>
+      <stop offset="100%" stop-color="#43A047"/>
+    </linearGradient>
+    <!-- Emblem circle gradient -->
+    <linearGradient id="emblemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1565C0"/>
+      <stop offset="50%" stop-color="#0288D1"/>
+      <stop offset="100%" stop-color="#43A047"/>
+    </linearGradient>
+    <!-- Swoosh gradient -->
+    <linearGradient id="swooshGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#43A047" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0097A7" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Inner glow for emblem -->
+    <radialGradient id="innerGlow" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+    <!-- Bright outer ring gradient -->
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#42A5F5" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#66BB6A" stop-opacity="0.7"/>
+    </linearGradient>
+    <!-- Drop shadow filter -->
+    <filter id="emblemShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0D47A1" flood-opacity="0.5"/>
+    </filter>
+    <filter id="textGlow" x="-5%" y="-10%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="3" flood-color="#0288D1" flood-opacity="0.5"/>
+    </filter>
+    <!-- Clip path for emblem -->
+    <clipPath id="emblemClip">
+      <circle cx="55" cy="55" r="48"/>
+    </clipPath>
+  </defs>
+
+  <!-- === EMBLEM CIRCLE === -->
+  <circle cx="55" cy="55" r="48" fill="url(#emblemGrad)" filter="url(#emblemShadow)"/>
+  <!-- Inner glow overlay -->
+  <circle cx="55" cy="55" r="48" fill="url(#innerGlow)"/>
+  <!-- Outer ring - vivid colored -->
+  <circle cx="55" cy="55" r="48" fill="none" stroke="url(#ringGrad)" stroke-width="2"/>
+  <!-- Inner ring -->
+  <circle cx="55" cy="55" r="40" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+
+  <!-- === BADMINTON RACQUET (inside emblem) === -->
+  <!-- Racquet frame — oval head -->
+  <g transform="translate(55,55) rotate(-30)" clip-path="url(#emblemClip)">
+    <!-- Head oval -->
+    <ellipse cx="0" cy="-10" rx="16" ry="21" fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="2.5"/>
+    <!-- Handle -->
+    <line x1="0" y1="11" x2="0" y2="34" stroke="rgba(255,255,255,0.95)" stroke-width="3" stroke-linecap="round"/>
+    <!-- Grip wrap lines -->
+    <line x1="-4" y1="18" x2="4" y2="22" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-4" y1="23" x2="4" y2="27" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- String grid — horizontal -->
+    <line x1="-15" y1="-10" x2="15" y2="-10" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <line x1="-16" y1="-4" x2="16" y2="-4" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <line x1="-16" y1="2" x2="16" y2="2" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <line x1="-15" y1="-16" x2="15" y2="-16" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <line x1="-13" y1="-22" x2="13" y2="-22" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <line x1="-14" y1="8" x2="14" y2="8" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+    <!-- String grid — vertical -->
+    <line x1="0" y1="-31" x2="0" y2="11" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <line x1="-6" y1="-30" x2="-6" y2="10" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <line x1="6" y1="-30" x2="6" y2="10" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <line x1="-11" y1="-26" x2="-11" y2="8" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+    <line x1="11" y1="-26" x2="11" y2="8" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+    <!-- Bridge (throat) -->
+    <path d="M-5,11 Q0,15 5,11" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2"/>
+  </g>
+
+  <!-- === DIAGONAL SWOOSH (between emblem and text) === -->
+  <path d="M 108 30 L 128 80" stroke="url(#swooshGrad)" stroke-width="3.5" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 113 30 L 133 80" stroke="url(#swooshGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- === TEXT BLOCK === -->
+  <!-- "CF" — large bold italic white with glow -->
+  <text
+    x="145"
+    y="72"
+    font-family="'Arial Black', 'Impact', 'Helvetica Neue', sans-serif"
+    font-size="58"
+    font-weight="900"
+    font-style="italic"
+    fill="white"
+    filter="url(#textGlow)"
+    letter-spacing="-2"
+  >CF</text>
+
+  <!-- Thin separator line below CF -->
+  <line x1="145" y1="79" x2="415" y2="79" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+
+  <!-- "SPORTS REPAIR" — bold tracking text with vivid gradient -->
+  <text
+    x="148"
+    y="97"
+    font-family="'Arial', 'Helvetica Neue', sans-serif"
+    font-size="17"
+    font-weight="700"
+    font-style="italic"
+    letter-spacing="4"
+    fill="url(#brandGrad)"
+  >SPORTS REPAIR</text>
+
+  <!-- Accent dot after text - vivid green -->
+  <circle cx="404" cy="91" r="3.5" fill="#66BB6A" opacity="0.95"/>
+
+  <!-- Top-right small tagline -->
+  <text
+    x="148"
+    y="28"
+    font-family="'Arial', 'Helvetica Neue', sans-serif"
+    font-size="9"
+    font-weight="600"
+    letter-spacing="3"
+    fill="rgba(255,255,255,0.55)"
+  >PROFESSIONAL EQUIPMENT SERVICE</text>
+
+</svg>

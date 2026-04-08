@@ -129,25 +129,38 @@ export function CustomerJobSheet({ job, open, onOpenChange, serialNo }: Props) {
           style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
         >
           {/* Header */}
-          <div className="text-center border-2 border-primary rounded-xl p-4 bg-blue-50">
-            <div className="text-3xl mb-1">🏸</div>
-            <h1 className="text-xl font-extrabold text-primary tracking-tight">
-              CF Sports Repair
-            </h1>
-            <p className="text-sm text-muted-foreground font-medium">
-              Customer Job Sheet
-            </p>
-            <div className="flex justify-center gap-6 mt-2 text-xs text-muted-foreground">
-              <span className="font-semibold">
-                Job No: <span className="text-primary">#{jobNo}</span>
-              </span>
-              <span className="font-semibold">
-                Date: <span className="text-foreground">{today}</span>
-              </span>
-              <span className="font-semibold">
-                Job Date:{" "}
-                <span className="text-foreground">{job.dateOfJob}</span>
-              </span>
+          <div className="rounded-xl overflow-hidden border-2 border-primary">
+            {/* Logo banner — dark gradient so white SVG text is visible on print */}
+            <div
+              className="flex items-center justify-center px-4 py-3"
+              style={{
+                background:
+                  "linear-gradient(135deg, #1565C0 0%, #0097A7 50%, #43A047 100%)",
+              }}
+            >
+              <img
+                src="/logo.svg"
+                alt="CF Sports Repair"
+                style={{ width: "220px", height: "auto", display: "block" }}
+              />
+            </div>
+            {/* Sub-header strip */}
+            <div className="bg-blue-50 text-center px-4 py-2">
+              <p className="text-sm font-semibold text-primary">
+                Customer Job Sheet
+              </p>
+              <div className="flex justify-center gap-6 mt-1 text-xs text-muted-foreground">
+                <span className="font-semibold">
+                  Job No: <span className="text-primary">#{jobNo}</span>
+                </span>
+                <span className="font-semibold">
+                  Date: <span className="text-foreground">{today}</span>
+                </span>
+                <span className="font-semibold">
+                  Job Date:{" "}
+                  <span className="text-foreground">{job.dateOfJob}</span>
+                </span>
+              </div>
             </div>
           </div>
 
