@@ -26,7 +26,7 @@ function buildCustomerShareText(j: JobWithId, jobNo: string): string {
         ? "🔧"
         : "⏳";
   const lines = [
-    "🏸 *Sports Repair Shop*",
+    "🏸 *CF Sports Repair*",
     "━━━━━━━━━━━━━━━━━━━━",
     "",
     `*Job No: #${jobNo}*`,
@@ -47,7 +47,7 @@ function buildCustomerShareText(j: JobWithId, jobNo: string): string {
     `Payment Mode: ${j.paymentMode}`,
     "",
     "━━━━━━━━━━━━━━━━━━━━",
-    "Thank you for visiting Sports Repair Shop! 🙏",
+    "Thank you for visiting CF Sports Repair! 🙏",
   );
   return lines.join("\n");
 }
@@ -132,7 +132,7 @@ export function CustomerJobSheet({ job, open, onOpenChange, serialNo }: Props) {
           <div className="text-center border-2 border-primary rounded-xl p-4 bg-blue-50">
             <div className="text-3xl mb-1">🏸</div>
             <h1 className="text-xl font-extrabold text-primary tracking-tight">
-              Sports Repair Shop
+              CF Sports Repair
             </h1>
             <p className="text-sm text-muted-foreground font-medium">
               Customer Job Sheet
@@ -283,7 +283,7 @@ export function CustomerJobSheet({ job, open, onOpenChange, serialNo }: Props) {
           {/* Footer message */}
           <div className="text-center py-2">
             <p className="text-sm font-semibold text-muted-foreground">
-              Thank you for visiting Sports Repair Shop! 🙏
+              Thank you for visiting CF Sports Repair! 🙏
             </p>
             <p className="text-xs text-muted-foreground/60 mt-0.5">
               Please keep this job sheet for your records.

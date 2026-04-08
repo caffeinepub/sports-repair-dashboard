@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-import type { BookingRecord, BookingWithId } from "../backend.d";
+import type { BookingRecord, BookingWithId } from "../hooks/useActor";
 import { useActor } from "../hooks/useActor";
 
 const WHATSAPP_NUMBER = "919440790818";
@@ -257,7 +257,7 @@ export function PublicWebsite() {
                 className="font-bold text-base leading-tight block"
                 style={{ color: "#0B5E86" }}
               >
-                CFR Sports Repairs
+                CF Sports Repair
               </span>
               <span className="text-[10px] text-[#6B7280] leading-tight block">
                 Professional Equipment Service
@@ -1195,7 +1195,7 @@ export function PublicWebsite() {
                   <Wrench className="h-5 w-5 text-white" />
                 </div>
                 <span className="font-bold text-white text-base">
-                  CFR Sports Repairs
+                  CF Sports Repair
                 </span>
               </div>
               <p className="text-sm text-white/50 leading-relaxed">
@@ -1266,7 +1266,7 @@ export function PublicWebsite() {
           {/* Bottom bar */}
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/30">
             <span>
-              © {new Date().getFullYear()} CFR Sports Repairs. Built with love
+              © {new Date().getFullYear()} CF Sports Repair. Built with love
               using{" "}
               <a
                 href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}

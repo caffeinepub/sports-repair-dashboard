@@ -1,0 +1,90 @@
+type JobWithId = 
+ record {
+   advancedAmount: float64;
+   createdAt: int;
+   customerMobile: text;
+   dateOfJob: text;
+   id: nat;
+   jobCategory: text;
+   jobDescription: text;
+   jobStatus: text;
+   modelName: text;
+   noOfRackets: nat;
+   paymentMode: text;
+   personName: text;
+   place: text;
+   serviceCharges: float64;
+   shopName: text;
+   totalAmount: float64;
+   typeOfWork: text;
+ };
+type JobRecord = 
+ record {
+   advancedAmount: float64;
+   createdAt: int;
+   customerMobile: text;
+   dateOfJob: text;
+   jobCategory: text;
+   jobDescription: text;
+   jobStatus: text;
+   modelName: text;
+   noOfRackets: nat;
+   paymentMode: text;
+   personName: text;
+   place: text;
+   serviceCharges: float64;
+   shopName: text;
+   totalAmount: float64;
+   typeOfWork: text;
+ };
+type BookingWithId = 
+ record {
+   bookingStatus: text;
+   createdAt: int;
+   customerMobile: text;
+   customerName: text;
+   equipmentDetails: text;
+   id: nat;
+   notes: text;
+   preferredDate: text;
+   serviceType: text;
+ };
+type BookingRecord = 
+ record {
+   bookingStatus: text;
+   createdAt: int;
+   customerMobile: text;
+   customerName: text;
+   equipmentDetails: text;
+   notes: text;
+   preferredDate: text;
+   serviceType: text;
+ };
+service : {
+  createBooking: (input: BookingRecord) -> (nat);
+  createJob: (input: JobRecord) -> (nat);
+  deleteJob: (id: nat) -> ();
+  getAllBookings: () -> (vec BookingWithId) query;
+  getAllJobs: () -> (vec JobWithId) query;
+  getBookingsByMobile: (mobile: text) -> (vec BookingWithId) query;
+  getBookingsSummary: () ->
+   (record {
+      cancelled: nat;
+      completed: nat;
+      confirmed: nat;
+      inProgress: nat;
+      pending: nat;
+      total: nat;
+    }) query;
+  getJobById: (id: nat) -> (JobRecord) query;
+  getSummaryStats: () ->
+   (record {
+      completedCount: nat;
+      inProgressCount: nat;
+      pendingCount: nat;
+      totalCount: nat;
+      totalRevenue: float64;
+    }) query;
+  updateBookingStatus: (id: nat, status: text) -> ();
+  updateJob: (id: nat, updatedJob: JobRecord) -> ();
+}

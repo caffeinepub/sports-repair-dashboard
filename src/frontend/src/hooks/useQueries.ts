@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { BookingRecord, JobRecord } from "../backend.d";
-import { useActor } from "./useActor";
+import { type BookingRecord, type JobRecord, useActor } from "./useActor";
 
 export type JobWithId = JobRecord & { _id: bigint | null };
 

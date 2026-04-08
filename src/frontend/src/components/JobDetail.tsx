@@ -40,7 +40,7 @@ function buildShareText(j: JobWithId): string {
 
   const isCustomer = j.jobCategory === "customer";
 
-  const lines = ["🏸 *Sports Repair Shop*", "━━━━━━━━━━━━━━━━━━━━", ""];
+  const lines = ["🏸 *CF Sports Repair*", "━━━━━━━━━━━━━━━━━━━━", ""];
 
   if (isCustomer) {
     lines.push(

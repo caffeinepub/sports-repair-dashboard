@@ -82,13 +82,13 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           >
             <svg
               role="img"
-              aria-label="Sports Repair logo"
+              aria-label="CF Sports Repair logo"
               viewBox="0 0 40 40"
               width="32"
               height="32"
               fill="none"
             >
-              <title>Sports Repair logo</title>
+              <title>CF Sports Repair logo</title>
               <circle cx="20" cy="20" r="18" stroke="white" strokeWidth="2.5" />
               <line
                 x1="10"
@@ -129,7 +129,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             </svg>
           </div>
           <h1 className="text-xl font-bold" style={{ color: "#e0f2fe" }}>
-            Sports Repair
+            CF Sports Repair
           </h1>
           <p className="text-sm" style={{ color: "#7dd3fc" }}>
             Admin Dashboard
@@ -203,7 +203,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           </form>
 
           <p className="text-center text-xs mt-6" style={{ color: "#475569" }}>
-            Sports Repair{" "}
+            CF Sports Repair{" "}
             <span style={{ color: "#38bdf8", fontWeight: 700 }}>Admin</span>{" "}
             Portal
           </p>

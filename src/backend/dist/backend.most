@@ -1,0 +1,81 @@
+// Version: 1.0.0
+type BookingRecord__287687401 =
+  {
+    bookingStatus : Text;
+    createdAt : Int;
+    customerMobile : Text;
+    customerName : Text;
+    equipmentDetails : Text;
+    notes : Text;
+    preferredDate : Text;
+    serviceType : Text
+  };
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type JobRecordV1__454531526 =
+  {
+    advancedAmount : Float;
+    createdAt : Int;
+    customerMobile : Text;
+    dateOfJob : Text;
+    jobDescription : Text;
+    jobStatus : Text;
+    modelName : Text;
+    noOfRackets : Nat;
+    paymentMode : Text;
+    personName : Text;
+    place : Text;
+    serviceCharges : Float;
+    shopName : Text;
+    totalAmount : Float;
+    typeOfWork : Text
+  };
+type JobRecord__755889037 =
+  {
+    advancedAmount : Float;
+    createdAt : Int;
+    customerMobile : Text;
+    dateOfJob : Text;
+    jobCategory : Text;
+    jobDescription : Text;
+    jobStatus : Text;
+    modelName : Text;
+    noOfRackets : Nat;
+    paymentMode : Text;
+    personName : Text;
+    place : Text;
+    serviceCharges : Float;
+    shopName : Text;
+    totalAmount : Float;
+    typeOfWork : Text
+  };
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+actor {
+  stable bookingRecords :
+    {
+      var root : Node__46230540<Nat, BookingRecord__287687401>;
+      var size : Nat__490723111
+    };
+  stable jobRecords :
+    {
+      var root : Node__46230540<Nat, JobRecordV1__454531526>;
+      var size : Nat__490723111
+    };
+  stable jobRecordsV2 :
+    {
+      var root : Node__46230540<Nat, JobRecord__755889037>;
+      var size : Nat__490723111
+    };
+  stable var nextBookingId : Nat;
+  stable var nextJobId : Nat;
+  stable var stableBookings : [(Nat, BookingRecord__287687401)];
+  stable var stableJobsV2 : [(Nat, JobRecord__755889037)];
+  stable var stableNextBookingId : Nat;
+  stable var stableNextJobId : Nat
+};

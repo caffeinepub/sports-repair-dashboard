@@ -29,7 +29,7 @@ export function ServiceBill({ job, open, onOpenChange }: Props) {
 
   function buildBillWhatsApp() {
     const lines = [
-      "🏸 *Sports Repair — Service Bill*",
+      "🏸 *CF Sports Repair — Service Bill*",
       `Bill No: #${billNo}  |  Date: ${today}`,
       "━━━━━━━━━━━━━━━━━━━━",
       "",
@@ -112,7 +112,7 @@ export function ServiceBill({ job, open, onOpenChange }: Props) {
           <div className="text-center border-2 border-primary rounded-xl p-4 bg-blue-50">
             <div className="text-3xl mb-1">🏸</div>
             <h1 className="text-xl font-extrabold text-primary tracking-tight">
-              Sports Repair Shop
+              CF Sports Repair
             </h1>
             <p className="text-sm text-muted-foreground font-medium">
               Service Bill / Invoice

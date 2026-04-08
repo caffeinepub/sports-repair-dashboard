@@ -339,7 +339,7 @@ function MonthlyStatement({ jobs, isShop = false }: MonthlyStatementProps) {
 
       {/* Print Header */}
       <div className="hidden print:block mb-4">
-        <h1 className="text-xl font-bold">Sports Repair Dashboard</h1>
+        <h1 className="text-xl font-bold">CF Sports Repair Dashboard</h1>
         <p className="text-sm text-muted-foreground">
           {isShop ? "Shop Jobs" : "Customer Jobs"} — Monthly Statement —{" "}
           {MONTHS[Number.parseInt(selectedMonth, 10)]} {selectedYear}

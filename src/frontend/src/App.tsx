@@ -181,7 +181,7 @@ function AdminApp() {
           </div>
           <div>
             <p className="text-white font-bold text-sm leading-tight">
-              CFR Sports Repairs
+              CF Sports Repair
             </p>
             <p className="text-white/60 text-xs">Admin Dashboard</p>
           </div>
@@ -244,7 +244,7 @@ function AdminApp() {
 
         {/* Footer */}
         <div className="px-5 py-4 border-t border-white/10">
-          <p className="text-white/40 text-xs">CFR Sports Repairs</p>
+          <p className="text-white/40 text-xs">CF Sports Repair</p>
         </div>
       </aside>
 
@@ -312,7 +312,7 @@ function AdminApp() {
 
         {/* Footer */}
         <footer className="border-t bg-card px-6 py-3 text-xs text-muted-foreground flex justify-center shrink-0 no-print">
-          © {new Date().getFullYear()} CFR Sports Repairs. Built with love using{" "}
+          © {new Date().getFullYear()} CF Sports Repair. Built with love using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
             className="text-primary ml-1 hover:underline"
