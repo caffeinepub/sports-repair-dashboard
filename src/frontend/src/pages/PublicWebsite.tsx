@@ -400,6 +400,15 @@ export function PublicWebsite() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
+            {/* Hero logo — full CF Sports Repair brand mark */}
+            <div className="mb-7 flex justify-center lg:justify-start">
+              <img
+                src="/logo.svg"
+                alt="CF Sports Repair"
+                className="w-auto drop-shadow-lg"
+                style={{ height: "80px", maxWidth: "320px" }}
+              />
+            </div>
             <div
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6"
               style={{ background: "rgba(47,174,94,0.2)", color: "#7DEDB8" }}
@@ -472,9 +481,10 @@ export function PublicWebsite() {
                     border: "1px solid rgba(255,255,255,0.15)",
                   }}
                 >
-                  <Wrench
-                    className="h-24 w-24 text-white/90"
-                    strokeWidth={1.5}
+                  <img
+                    src="/logo-icon.svg"
+                    alt="CF Sports Repair Logo"
+                    className="w-44 h-44 object-contain"
                   />
                 </div>
               </div>
