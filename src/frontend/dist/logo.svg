@@ -17,6 +17,11 @@
       <stop offset="0%" stop-color="#43A047" stop-opacity="0.95"/>
       <stop offset="100%" stop-color="#0097A7" stop-opacity="0"/>
     </linearGradient>
+    <!-- CF text gradient: deep blue to green -->
+    <linearGradient id="cfGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0D47A1"/>
+      <stop offset="100%" stop-color="#1B8C46"/>
+    </linearGradient>
     <!-- Inner glow for emblem -->
     <radialGradient id="innerGlow" cx="40%" cy="35%" r="60%">
       <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
@@ -32,7 +37,7 @@
       <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0D47A1" flood-opacity="0.5"/>
     </filter>
     <filter id="textGlow" x="-5%" y="-10%" width="110%" height="120%">
-      <feDropShadow dx="0" dy="1" stdDeviation="3" flood-color="#0288D1" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1565C0" flood-opacity="0.25"/>
     </filter>
     <!-- Clip path for emblem -->
     <clipPath id="emblemClip">
@@ -81,7 +86,7 @@
   <path d="M 113 30 L 133 80" stroke="url(#swooshGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
 
   <!-- === TEXT BLOCK === -->
-  <!-- "CF" — large bold italic white with glow -->
+  <!-- "CF" — large bold italic using deep blue-to-green gradient (visible on white) -->
   <text
     x="145"
     y="72"
@@ -89,13 +94,13 @@
     font-size="58"
     font-weight="900"
     font-style="italic"
-    fill="white"
+    fill="url(#cfGrad)"
     filter="url(#textGlow)"
     letter-spacing="-2"
   >CF</text>
 
   <!-- Thin separator line below CF -->
-  <line x1="145" y1="79" x2="415" y2="79" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+  <line x1="145" y1="79" x2="415" y2="79" stroke="rgba(0,100,180,0.18)" stroke-width="1"/>
 
   <!-- "SPORTS REPAIR" — bold tracking text with vivid gradient -->
   <text
@@ -110,7 +115,7 @@
   >SPORTS REPAIR</text>
 
   <!-- Accent dot after text - vivid green -->
-  <circle cx="404" cy="91" r="3.5" fill="#66BB6A" opacity="0.95"/>
+  <circle cx="404" cy="91" r="3.5" fill="#43A047" opacity="0.95"/>
 
   <!-- Top-right small tagline -->
   <text
@@ -120,7 +125,8 @@
     font-size="9"
     font-weight="600"
     letter-spacing="3"
-    fill="rgba(255,255,255,0.55)"
+    fill="#0288D1"
+    opacity="0.8"
   >PROFESSIONAL EQUIPMENT SERVICE</text>
 
 </svg>

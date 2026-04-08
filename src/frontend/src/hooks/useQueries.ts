@@ -12,43 +12,66 @@ function inferCategory(job: unknown): string {
 }
 
 export function useGetAllJobs() {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery<JobWithId[]>({
     queryKey: ["jobs"],
     queryFn: async () => {
       if (!actor) return [];
-      const jobs = await actor.getAllJobs();
-      const withIds: JobWithId[] = (jobs as unknown[]).map((job) => {
-        const j = job as Record<string, unknown>;
-        // The Candid decoder returns id as a bigint. We must extract it explicitly
-        // before spreading, as TypeScript types may not expose it.
-        const rawId = j.id;
-        const resolvedId: bigint | null =
-          rawId !== undefined && rawId !== null
-            ? BigInt(rawId as bigint)
-            : null;
-        return {
-          ...(j as unknown as JobRecord),
-          jobCategory: inferCategory(j),
-          // Store the real backend ID - works on any device/browser
-          _id: resolvedId,
-        };
-      });
-      return withIds.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
+      try {
+        const jobs = await actor.getAllJobs();
+        const withIds: JobWithId[] = (jobs as unknown[]).map((job) => {
+          const j = job as Record<string, unknown>;
+          // The Candid decoder returns id as a bigint. We must extract it explicitly
+          // before spreading, as TypeScript types may not expose it.
+          const rawId = j.id;
+          const resolvedId: bigint | null =
+            rawId !== undefined && rawId !== null
+              ? BigInt(rawId as bigint)
+              : null;
+          return {
+            ...(j as unknown as JobRecord),
+            jobCategory: inferCategory(j),
+            // Store the real backend ID - works on any device/browser
+            _id: resolvedId,
+          };
+        });
+        return withIds.sort(
+          (a, b) => Number(b.createdAt) - Number(a.createdAt),
+        );
+      } catch (err) {
+        console.error("[useGetAllJobs] Failed to fetch jobs:", err);
+        throw err;
+      }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor,
+    retry: 3,
+    staleTime: 30000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 }
 
 export function useGetSummaryStats() {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery({
     queryKey: ["summaryStats"],
     queryFn: async () => {
       if (!actor) return null;
-      return actor.getSummaryStats();
+      try {
+        return await actor.getSummaryStats();
+      } catch (err) {
+        console.error(
+          "[useGetSummaryStats] Failed to fetch summary stats:",
+          err,
+        );
+        throw err;
+      }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor,
+    retry: 3,
+    staleTime: 30000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -104,26 +127,34 @@ export function useDeleteJob() {
 }
 
 export function useGetAllBookings() {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery({
     queryKey: ["bookings"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getAllBookings();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor,
+    retry: 3,
+    staleTime: 30000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 }
 
 export function useGetBookingsSummary() {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery({
     queryKey: ["bookingsSummary"],
     queryFn: async () => {
       if (!actor) return null;
       return actor.getBookingsSummary();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor,
+    retry: 3,
+    staleTime: 30000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 }
 

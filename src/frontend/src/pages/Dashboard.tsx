@@ -5,10 +5,12 @@ import {
   CalendarCheck,
   CheckCircle2,
   Clock,
+  Loader2,
   TrendingUp,
 } from "lucide-react";
 import { KpiCard } from "../components/KpiCard";
 import { StatusBadge } from "../components/StatusBadge";
+import { useActor } from "../hooks/useActor";
 import type { JobWithId } from "../hooks/useQueries";
 import {
   useGetAllJobs,
@@ -24,10 +26,24 @@ interface Props {
 const SKELETON_IDS = ["a", "b", "c", "d", "e"];
 
 export function Dashboard({ onNavigateJobs, onViewJob }: Props) {
-  const { data: stats, isLoading: statsLoading } = useGetSummaryStats();
-  const { data: jobs, isLoading: jobsLoading } = useGetAllJobs();
+  const { isFetching: actorFetching } = useActor();
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    isFetching: statsFetching,
+  } = useGetSummaryStats();
+  const {
+    data: jobs,
+    isLoading: jobsLoading,
+    isFetching: jobsFetching,
+  } = useGetAllJobs();
   const { data: bookingsSummary, isLoading: bookingsSummaryLoading } =
     useGetBookingsSummary();
+
+  // Show loading when actor is initialising or data is being fetched
+  const kpiLoading =
+    actorFetching || statsLoading || statsFetching || bookingsSummaryLoading;
+  const jobListLoading = actorFetching || jobsLoading || jobsFetching;
 
   const recentJobs = jobs?.slice(0, 6) ?? [];
 
@@ -45,7 +61,7 @@ export function Dashboard({ onNavigateJobs, onViewJob }: Props) {
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         data-ocid="dashboard.section"
       >
-        {statsLoading || bookingsSummaryLoading ? (
+        {kpiLoading ? (
           SKELETON_IDS.map((id) => (
             <Skeleton key={id} className="h-24 rounded-xl" />
           ))
@@ -109,7 +125,7 @@ export function Dashboard({ onNavigateJobs, onViewJob }: Props) {
           </button>
         </div>
         <div className="bg-card rounded-xl shadow-sm overflow-hidden">
-          {jobsLoading ? (
+          {jobListLoading ? (
             <div className="p-4 space-y-3">
               {SKELETON_IDS.slice(0, 4).map((id) => (
                 <Skeleton key={id} className="h-10" />
@@ -120,7 +136,14 @@ export function Dashboard({ onNavigateJobs, onViewJob }: Props) {
               className="p-10 text-center text-muted-foreground text-sm"
               data-ocid="dashboard.empty_state"
             >
-              No jobs yet. Create your first job sheet!
+              {jobs === undefined ? (
+                <>
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-muted-foreground/50" />
+                  Loading your jobs... please wait.
+                </>
+              ) : (
+                "No jobs yet. Create your first job sheet!"
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto">

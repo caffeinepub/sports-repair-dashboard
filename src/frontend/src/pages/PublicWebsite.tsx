@@ -243,13 +243,35 @@ export function PublicWebsite() {
       <header className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB] shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-2.5">
             <img
-              src="/logo.svg"
-              alt="CF Sports Repair"
-              className="h-11 w-auto"
-              style={{ filter: "drop-shadow(0 1px 3px rgba(11,31,51,0.25))" }}
+              src="/logo-icon.svg"
+              alt="CF Sports Repair icon"
+              className="h-10 w-10 flex-shrink-0"
             />
+            <span
+              className="font-extrabold text-lg leading-tight hidden sm:block"
+              style={{
+                background: "linear-gradient(135deg,#1565C0,#0097A7,#43A047)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              CF Sports
+              <br />
+              <span
+                className="text-sm font-bold tracking-widest"
+                style={{
+                  background: "linear-gradient(135deg,#0097A7,#43A047)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                REPAIR
+              </span>
+            </span>
           </div>
 
           {/* Desktop Nav */}
