@@ -163,6 +163,7 @@ export interface backendInterface {
         inProgress: bigint;
     }>;
     getJobById(id: bigint): Promise<JobRecord>;
+    getJobsByCategory(category: string): Promise<Array<JobWithId>>;
     getSummaryStats(): Promise<{
         pendingCount: bigint;
         inProgressCount: bigint;
@@ -291,6 +292,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getJobById(arg0);
+            return result;
+        }
+    }
+    async getJobsByCategory(arg0: string): Promise<Array<JobWithId>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getJobsByCategory(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getJobsByCategory(arg0);
             return result;
         }
     }

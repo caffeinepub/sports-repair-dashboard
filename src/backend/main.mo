@@ -215,6 +215,34 @@ actor {
     });
   };
 
+  public query func getJobsByCategory(category : Text) : async [JobWithId] {
+    jobRecordsV2.entries().toArray().filter(
+      func((id, job) : (Nat, JobRecord)) : Bool {
+        Text.equal(job.jobCategory, category)
+      }
+    ).map(func((id, job) : (Nat, JobRecord)) : JobWithId {
+      {
+        id = id;
+        shopName = job.shopName;
+        personName = job.personName;
+        customerMobile = job.customerMobile;
+        place = job.place;
+        typeOfWork = job.typeOfWork;
+        modelName = job.modelName;
+        noOfRackets = job.noOfRackets;
+        jobDescription = job.jobDescription;
+        serviceCharges = job.serviceCharges;
+        paymentMode = job.paymentMode;
+        advancedAmount = job.advancedAmount;
+        totalAmount = job.totalAmount;
+        jobStatus = job.jobStatus;
+        dateOfJob = job.dateOfJob;
+        createdAt = job.createdAt;
+        jobCategory = job.jobCategory;
+      }
+    });
+  };
+
   public query func getSummaryStats() : async {
     totalCount : Nat;
     pendingCount : Nat;

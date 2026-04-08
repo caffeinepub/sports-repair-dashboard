@@ -77,6 +77,7 @@ service : {
       total: nat;
     }) query;
   getJobById: (id: nat) -> (JobRecord) query;
+  getJobsByCategory: (category: text) -> (vec JobWithId) query;
   getSummaryStats: () ->
    (record {
       completedCount: nat;

@@ -81,6 +81,7 @@ export interface backendInterface {
         inProgress: bigint;
     }>;
     getJobById(id: bigint): Promise<JobRecord>;
+    getJobsByCategory(category: string): Promise<Array<JobWithId>>;
     getSummaryStats(): Promise<{
         pendingCount: bigint;
         inProgressCount: bigint;

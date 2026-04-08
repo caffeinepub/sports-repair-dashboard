@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart2, Building2, Printer, User } from "lucide-react";
+import { BarChart2, Building2, Handshake, Printer, User } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useGetAllJobs } from "../hooks/useQueries";
 
@@ -257,9 +257,16 @@ interface MonthlyStatementProps {
   // biome-ignore lint/suspicious/noExplicitAny: flexible
   jobs: any[];
   isShop?: boolean;
+  printSuffix?: string;
+  label?: string;
 }
 
-function MonthlyStatement({ jobs, isShop = false }: MonthlyStatementProps) {
+function MonthlyStatement({
+  jobs,
+  isShop = false,
+  printSuffix = "",
+  label,
+}: MonthlyStatementProps) {
   const printRef = useRef<HTMLDivElement>(null);
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(String(now.getMonth()));
@@ -284,10 +291,11 @@ function MonthlyStatement({ jobs, isShop = false }: MonthlyStatementProps) {
     );
   }, [monthlyJobs]);
 
-  const printId = isShop ? "monthly-print-shop" : "monthly-print-customer";
+  const basePrintId = isShop ? "monthly-print-shop" : "monthly-print-customer";
+  const printId = printSuffix ? `${basePrintId}-${printSuffix}` : basePrintId;
+  const statementLabel = label ?? (isShop ? "Shop Jobs" : "Customer Jobs");
 
   function handlePrint() {
-    // Inject a temporary style to print only the relevant section
     const style = document.createElement("style");
     style.id = "__temp_print_style";
     style.innerHTML = `@media print { body * { visibility: hidden !important; } #${printId}, #${printId} * { visibility: visible !important; } #${printId} { position: fixed !important; top: 0; left: 0; width: 100%; } }`;
@@ -341,7 +349,7 @@ function MonthlyStatement({ jobs, isShop = false }: MonthlyStatementProps) {
       <div className="hidden print:block mb-4">
         <h1 className="text-xl font-bold">CF Sports Repair Dashboard</h1>
         <p className="text-sm text-muted-foreground">
-          {isShop ? "Shop Jobs" : "Customer Jobs"} — Monthly Statement —{" "}
+          {statementLabel} — Monthly Statement —{" "}
           {MONTHS[Number.parseInt(selectedMonth, 10)]} {selectedYear}
         </p>
         <hr className="my-2" />
@@ -507,15 +515,53 @@ function MonthlyStatement({ jobs, isShop = false }: MonthlyStatementProps) {
 export function Reports() {
   const { data: jobs, isLoading } = useGetAllJobs();
 
+  // biome-ignore lint/suspicious/noExplicitAny: flexible
+  const allJobs = (jobs ?? []) as any[];
+
   const customerJobs = useMemo(
-    () => (jobs ?? []).filter((j) => j.jobCategory !== "shop"),
-    [jobs],
+    () =>
+      allJobs.filter(
+        (j) => j.jobCategory !== "shop" && j.jobCategory !== "dealer",
+      ),
+    [allJobs],
   );
 
   const shopJobs = useMemo(
-    () => (jobs ?? []).filter((j) => j.jobCategory === "shop"),
-    [jobs],
+    () => allJobs.filter((j) => j.jobCategory === "shop"),
+    [allJobs],
   );
+
+  const dealerJobs = useMemo(
+    () => allJobs.filter((j) => j.jobCategory === "dealer"),
+    [allJobs],
+  );
+
+  // Unique dealer names for the filter dropdown
+  const dealerNames = useMemo(() => {
+    const names = new Set<string>();
+    for (const j of dealerJobs) {
+      const name = j.shopName || j.dealerName || j.personName || "";
+      if (name) names.add(name);
+    }
+    return Array.from(names).sort();
+  }, [dealerJobs]);
+
+  const [selectedDealer, setSelectedDealer] = useState("all");
+
+  const filteredDealerJobs = useMemo(() => {
+    if (selectedDealer === "all") return dealerJobs;
+    return dealerJobs.filter(
+      (j) =>
+        (j.shopName || j.dealerName || j.personName || "") === selectedDealer,
+    );
+  }, [dealerJobs, selectedDealer]);
+
+  const dealerPrintSuffix =
+    selectedDealer === "all"
+      ? "all"
+      : selectedDealer.replace(/\s+/g, "-").toLowerCase();
+  const dealerLabel =
+    selectedDealer === "all" ? "Dealer Jobs" : `Dealer: ${selectedDealer}`;
 
   if (isLoading) {
     return (
@@ -538,7 +584,7 @@ export function Reports() {
           <h1 className="text-2xl font-bold">Reports & Analytics</h1>
           <p className="text-muted-foreground text-sm mt-0.5">
             {customerJobs.length} customer jobs &nbsp;·&nbsp; {shopJobs.length}{" "}
-            shop jobs
+            shop jobs &nbsp;·&nbsp; {dealerJobs.length} dealer jobs
           </p>
         </div>
       </div>
@@ -561,6 +607,14 @@ export function Reports() {
           >
             <Building2 className="h-4 w-4" />
             Shop Job Reports
+          </TabsTrigger>
+          <TabsTrigger
+            value="dealers"
+            className="gap-2"
+            data-ocid="reports.tab.dealers"
+          >
+            <Handshake className="h-4 w-4" />
+            Dealers
           </TabsTrigger>
         </TabsList>
 
@@ -586,6 +640,55 @@ export function Reports() {
           </div>
           <SummaryCards jobs={shopJobs} />
           <MonthlyStatement jobs={shopJobs} isShop={true} />
+        </TabsContent>
+
+        {/* Dealers Reports */}
+        <TabsContent value="dealers" className="space-y-8">
+          {/* Dealer filter bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl bg-card border border-border">
+            <div className="flex items-center gap-2 min-w-0">
+              <Handshake className="h-4 w-4 text-primary shrink-0" />
+              <span className="text-sm font-semibold">
+                Filter by Dealer Name:
+              </span>
+            </div>
+            <Select value={selectedDealer} onValueChange={setSelectedDealer}>
+              <SelectTrigger className="w-56" data-ocid="reports.dealer_filter">
+                <SelectValue placeholder="All Dealers" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Dealers</SelectItem>
+                {dealerNames.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-muted-foreground">
+              {filteredDealerJobs.length} job
+              {filteredDealerJobs.length !== 1 ? "s" : ""}{" "}
+              {selectedDealer !== "all" ? `for ${selectedDealer}` : "total"}
+            </span>
+          </div>
+
+          {/* Dealer summary header */}
+          <div className="flex items-center gap-2 mb-2">
+            <Handshake className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold text-muted-foreground">
+              {filteredDealerJobs.length} dealer job
+              {filteredDealerJobs.length !== 1 ? "s" : ""}
+              {selectedDealer !== "all" ? ` — ${selectedDealer}` : " total"}
+            </span>
+          </div>
+
+          <SummaryCards jobs={filteredDealerJobs} />
+          <MonthlyStatement
+            jobs={filteredDealerJobs}
+            isShop={true}
+            printSuffix={dealerPrintSuffix}
+            label={dealerLabel}
+          />
         </TabsContent>
       </Tabs>
     </div>

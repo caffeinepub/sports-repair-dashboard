@@ -93,6 +93,7 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getJobById' : IDL.Func([IDL.Nat], [JobRecord], ['query']),
+  'getJobsByCategory' : IDL.Func([IDL.Text], [IDL.Vec(JobWithId)], ['query']),
   'getSummaryStats' : IDL.Func(
       [],
       [
@@ -198,6 +199,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getJobById' : IDL.Func([IDL.Nat], [JobRecord], ['query']),
+    'getJobsByCategory' : IDL.Func([IDL.Text], [IDL.Vec(JobWithId)], ['query']),
     'getSummaryStats' : IDL.Func(
         [],
         [

@@ -87,6 +87,7 @@ export interface _SERVICE {
     }
   >,
   'getJobById' : ActorMethod<[bigint], JobRecord>,
+  'getJobsByCategory' : ActorMethod<[string], Array<JobWithId>>,
   'getSummaryStats' : ActorMethod<
     [],
     {

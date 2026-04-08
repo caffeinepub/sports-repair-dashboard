@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import {
   BarChart2,
+  Building2,
   CalendarCheck,
   ClipboardList,
   LayoutDashboard,
@@ -13,6 +14,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CustomerJobSheet } from "./components/CustomerJobSheet";
+import { DealerJobForm } from "./components/DealerJobForm";
+import { DealerServiceBill } from "./components/DealerServiceBill";
 import { JobDetail } from "./components/JobDetail";
 import { JobForm } from "./components/JobForm";
 import { ServiceBill } from "./components/ServiceBill";
@@ -21,18 +24,26 @@ import type { JobWithId } from "./hooks/useQueries";
 import { seedIfNeeded } from "./lib/seed";
 import { BookingsPage } from "./pages/BookingsPage";
 import { Dashboard } from "./pages/Dashboard";
+import { DealerJobsList } from "./pages/DealerJobsList";
 import { JobsList } from "./pages/JobsList";
 import { LoginPage } from "./pages/LoginPage";
 import { PublicWebsite } from "./pages/PublicWebsite";
 import { Reports } from "./pages/Reports";
 import { ShopJobsList } from "./pages/ShopJobsList";
 
-type Page = "dashboard" | "jobs" | "reports" | "shopjobs" | "bookings";
+type Page =
+  | "dashboard"
+  | "jobs"
+  | "reports"
+  | "shopjobs"
+  | "bookings"
+  | "dealers";
 
 const navItems = [
   { id: "dashboard" as Page, label: "Dashboard", icon: LayoutDashboard },
   { id: "jobs" as Page, label: "All Jobs", icon: ClipboardList },
   { id: "shopjobs" as Page, label: "Shop Jobs", icon: Store },
+  { id: "dealers" as Page, label: "Dealers", icon: Building2 },
   { id: "bookings" as Page, label: "Bookings", icon: CalendarCheck },
   { id: "reports" as Page, label: "Reports", icon: BarChart2 },
 ];
@@ -42,6 +53,7 @@ function pageTitle(page: Page): string {
   if (page === "reports") return "Reports & Analytics";
   if (page === "shopjobs") return "Sports Shop Jobs";
   if (page === "bookings") return "Customer Bookings";
+  if (page === "dealers") return "Dealer Jobs";
   return "Job Sheet Management";
 }
 
@@ -78,6 +90,10 @@ function AdminApp() {
   const [billOpen, setBillOpen] = useState(false);
   const [shopFormOpen, setShopFormOpen] = useState(false);
   const [editShopJob, setEditShopJob] = useState<JobWithId | null>(null);
+  const [dealerFormOpen, setDealerFormOpen] = useState(false);
+  const [editDealerJob, setEditDealerJob] = useState<JobWithId | null>(null);
+  const [dealerBillJob, setDealerBillJob] = useState<JobWithId | null>(null);
+  const [dealerBillOpen, setDealerBillOpen] = useState(false);
   const [customerSheetJob, setCustomerSheetJob] = useState<JobWithId | null>(
     null,
   );
@@ -143,6 +159,21 @@ function AdminApp() {
   function openEditShopJob(job: JobWithId) {
     setEditShopJob(job);
     setShopFormOpen(true);
+  }
+
+  function openNewDealerJob() {
+    setEditDealerJob(null);
+    setDealerFormOpen(true);
+  }
+
+  function openEditDealerJob(job: JobWithId) {
+    setEditDealerJob(job);
+    setDealerFormOpen(true);
+  }
+
+  function openDealerBill(job: JobWithId) {
+    setDealerBillJob(job);
+    setDealerBillOpen(true);
   }
 
   function navigate(p: Page) {
@@ -240,6 +271,18 @@ function AdminApp() {
             <Store className="h-4 w-4 shrink-0" />
             New Shop Job
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              openNewDealerJob();
+              setSidebarOpen(false);
+            }}
+            data-ocid="nav.new_dealer_job.button"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all"
+          >
+            <Building2 className="h-4 w-4 shrink-0" />
+            New Dealer Job
+          </button>
         </nav>
 
         {/* Footer */}
@@ -306,6 +349,14 @@ function AdminApp() {
               onPrintSheet={openBill}
             />
           )}
+          {page === "dealers" && (
+            <DealerJobsList
+              onNewDealerJob={openNewDealerJob}
+              onViewJob={openViewJob}
+              onEditJob={openEditDealerJob}
+              onPrintSheet={openDealerBill}
+            />
+          )}
           {page === "bookings" && <BookingsPage />}
           {page === "reports" && <Reports />}
         </main>
@@ -330,6 +381,11 @@ function AdminApp() {
         onOpenChange={setShopFormOpen}
         editJob={editShopJob}
       />
+      <DealerJobForm
+        open={dealerFormOpen}
+        onOpenChange={setDealerFormOpen}
+        editJob={editDealerJob}
+      />
       <JobDetail
         job={detailJob}
         open={detailOpen}
@@ -348,6 +404,11 @@ function AdminApp() {
         }}
       />
       <ServiceBill job={billJob} open={billOpen} onOpenChange={setBillOpen} />
+      <DealerServiceBill
+        job={dealerBillJob}
+        open={dealerBillOpen}
+        onOpenChange={setDealerBillOpen}
+      />
       <CustomerJobSheet
         job={customerSheetJob}
         open={customerSheetOpen}
