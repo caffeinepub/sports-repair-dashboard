@@ -475,16 +475,16 @@ export function PublicWebsite() {
                 }}
               >
                 <div
-                  className="w-52 h-52 rounded-full flex items-center justify-center"
+                  className="w-52 h-52 rounded-full overflow-hidden"
                   style={{
-                    background: "rgba(255,255,255,0.08)",
-                    border: "1px solid rgba(255,255,255,0.15)",
+                    border: "3px solid rgba(47,174,94,0.7)",
+                    boxShadow: "0 0 0 4px rgba(11,94,134,0.4)",
                   }}
                 >
                   <img
-                    src="/logo-icon.svg"
-                    alt="CF Sports Repair Logo"
-                    className="w-44 h-44 object-contain"
+                    src="/assets/images/hero-image.jpg"
+                    alt="CF Sports Repair"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>
